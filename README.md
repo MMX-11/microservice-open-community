@@ -78,3 +78,4 @@ docker compose up --build
 - 评测结果持久化（PostgreSQL + MinIO/OBS）
 - 引入任务排行榜自动发布与月度社区报告
 - 增加模型插件协议（本地模型、云上 API、Hugging Face Inference Endpoint）
+CI trigger test

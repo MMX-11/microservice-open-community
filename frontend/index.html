@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patent Benchmark Open Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+    <header class="hero">
+      <p class="eyebrow">Patent Intelligence Platform</p>
+      <h1>开源社区 + 大模型 + 基准评测</h1>
+      <p class="subtitle">
+        统一管理 GitHub 项目、数据集、Issue、评测流程与云上节点，服务专利领域智能算法研究与协作。
+      </p>
+    </header>
+
+    <main class="grid">
+      <section class="card" id="community-card">
+        <h2>GitHub 社区总览</h2>
+        <div class="kv-grid" id="community-overview"></div>
+        <h3>近期 Issues</h3>
+        <div id="issues-list" class="list"></div>
+      </section>
+
+      <section class="card" id="benchmark-card">
+        <h2>基准评测</h2>
+        <label for="task-select">任务</label>
+        <select id="task-select"></select>
+
+        <label for="predictions">Predictions（每行一个）</label>
+        <textarea id="predictions" rows="5" placeholder="A&#10;B&#10;C"></textarea>
+
+        <label for="references">References（每行一个）</label>
+        <textarea id="references" rows="5" placeholder="A&#10;B&#10;D"></textarea>
+
+        <button id="run-eval-btn">运行评测</button>
+        <pre id="eval-output" class="output"></pre>
+      </section>
+
+      <section class="card" id="llm-card">
+        <h2>大模型交互</h2>
+        <label for="llm-input">输入问题</label>
+        <textarea id="llm-input" rows="4" placeholder="请给出专利语义匹配任务的数据清洗建议。"></textarea>
+        <button id="ask-llm-btn">发送</button>
+        <pre id="llm-output" class="output"></pre>
+      </section>
+
+      <section class="card" id="resource-card">
+        <h2>资源目录</h2>
+        <div id="resource-list" class="list"></div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+

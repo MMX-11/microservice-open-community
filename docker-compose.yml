@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+    ports:
+      - "8080:8000"
+    environment:
+      COMMUNITY_SERVICE_URL: "http://community-service:8001"
+      BENCHMARK_SERVICE_URL: "http://benchmark-service:8002"
+      LLM_SERVICE_URL: "http://llm-service:8003"
+      RESOURCE_SERVICE_URL: "http://resource-service:8004"
+      FRONTEND_DIR: "/app/frontend"
+    depends_on:
+      - community-service
+      - benchmark-service
+      - llm-service
+      - resource-service
+    volumes:
+      - ./frontend:/app/frontend:ro
+
+  community-service:
+    build:
+      context: .
+      dockerfile: services/community-service/Dockerfile
+    environment:
+      GITHUB_OWNER: "${GITHUB_OWNER}"
+      GITHUB_REPO: "${GITHUB_REPO}"
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      HF_ORG: "${HF_ORG}"
+
+  benchmark-service:
+    build:
+      context: .
+      dockerfile: services/benchmark-service/Dockerfile
+    volumes:
+      - ./benchmarks:/app/benchmarks:ro
+    environment:
+      TASK_FILE: "/app/benchmarks/tasks.json"
+
+  llm-service:
+    build:
+      context: .
+      dockerfile: services/llm-service/Dockerfile
+    environment:
+      OPENAI_COMPATIBLE_BASE_URL: "${OPENAI_COMPATIBLE_BASE_URL}"
+      OPENAI_COMPATIBLE_API_KEY: "${OPENAI_COMPATIBLE_API_KEY}"
+      OPENAI_COMPATIBLE_MODEL: "${OPENAI_COMPATIBLE_MODEL}"
+      OPENAI_COMPATIBLE_CHAT_PATH: "${OPENAI_COMPATIBLE_CHAT_PATH}"
+
+  resource-service:
+    build:
+      context: .
+      dockerfile: services/resource-service/Dockerfile
+    volumes:
+      - ./resources:/app/resources:ro
+    environment:
+      RESOURCE_FILE: "/app/resources/catalog.json"
+

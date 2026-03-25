@@ -1,0 +1,36 @@
+name: Benchmark CI
+
+on:
+  pull_request:
+    paths:
+      - "services/**"
+      - "benchmarks/**"
+      - "resources/**"
+      - "frontend/**"
+      - ".github/workflows/benchmark-ci.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate JSON files
+        run: |
+          python -m json.tool benchmarks/tasks.json > /dev/null
+          python -m json.tool resources/catalog.json > /dev/null
+
+      - name: Lint Python syntax
+        run: |
+          python -m py_compile services/community-service/main.py
+          python -m py_compile services/benchmark-service/main.py
+          python -m py_compile services/llm-service/main.py
+          python -m py_compile services/resource-service/main.py
+          python -m py_compile services/api-gateway/main.py
+

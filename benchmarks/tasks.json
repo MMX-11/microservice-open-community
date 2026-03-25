@@ -1,0 +1,41 @@
+{
+  "tasks": [
+    {
+      "id": "patent_classification_zh",
+      "name": "专利文本分类",
+      "type": "classification",
+      "metric": "accuracy",
+      "description": "根据摘要与权利要求文本预测专利技术类别。",
+      "dataset": "patent-classification-zh-v1",
+      "baseline": {
+        "name": "tfidf-linear",
+        "score": 0.7621
+      }
+    },
+    {
+      "id": "patent_semantic_matching_zh",
+      "name": "专利语义匹配",
+      "type": "similarity",
+      "metric": "token_f1",
+      "description": "评估检索问题与候选专利内容之间的语义一致性。",
+      "dataset": "patent-semantic-matching-zh-v1",
+      "baseline": {
+        "name": "sbert-cosine",
+        "score": 0.6834
+      }
+    },
+    {
+      "id": "patent_abstract_summarization_zh",
+      "name": "专利摘要生成",
+      "type": "similarity",
+      "metric": "token_f1",
+      "description": "基于专利全文生成高质量摘要（演示版使用 token_f1）。",
+      "dataset": "patent-summarization-zh-v1",
+      "baseline": {
+        "name": "bart-base",
+        "score": 0.6012
+      }
+    }
+  ]
+}
+

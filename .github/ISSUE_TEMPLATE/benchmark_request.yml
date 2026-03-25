@@ -1,0 +1,32 @@
+name: Benchmark Task Request
+description: 新增或优化评测任务
+title: "[Benchmark] "
+labels: ["benchmark", "enhancement"]
+body:
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      placeholder: patent_xxx
+    validations:
+      required: true
+  - type: input
+    id: metric
+    attributes:
+      label: Metric
+      placeholder: accuracy / f1 / rouge-l ...
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 任务说明
+      placeholder: 任务定义、评测方法、预期价值
+    validations:
+      required: true
+  - type: textarea
+    id: baseline
+    attributes:
+      label: Baseline 计划
+      placeholder: 基线模型与复现方式
+

@@ -1,0 +1,80 @@
+{
+  "platforms": [
+    {
+      "name": "GitHub Community",
+      "role": "代码、Issue、PR、评测流程统一协作",
+      "url": "https://github.com/your-org/patent-benchmark-community"
+    },
+    {
+      "name": "Hugging Face Hub",
+      "role": "数据集与模型卡发布",
+      "url": "https://huggingface.co/your-org"
+    },
+    {
+      "name": "OpenKG",
+      "role": "知识图谱与数据开放参考生态",
+      "url": "https://www.openkg.cn/"
+    },
+    {
+      "name": "Huawei Cloud",
+      "role": "网站节点、容器部署、对象存储",
+      "url": "https://www.huaweicloud.com/"
+    }
+  ],
+  "datasets": [
+    {
+      "name": "patent-classification-zh-v1",
+      "license": "CC BY-NC 4.0",
+      "language": "zh",
+      "storage": "Hugging Face Dataset + OBS 备份",
+      "version": "1.0.0"
+    },
+    {
+      "name": "patent-semantic-matching-zh-v1",
+      "license": "CC BY-NC 4.0",
+      "language": "zh",
+      "storage": "Hugging Face Dataset + OBS 备份",
+      "version": "1.0.0"
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "patent_classification_zh",
+      "metric": "accuracy",
+      "submission_format": "每行一个标签，顺序与 references 对齐",
+      "owner_team": "benchmark-maintainers"
+    },
+    {
+      "task_id": "patent_semantic_matching_zh",
+      "metric": "token_f1",
+      "submission_format": "每行一个预测文本，按空格分词评估",
+      "owner_team": "benchmark-maintainers"
+    }
+  ],
+  "contribution_spec": {
+    "dataset_required_fields": [
+      "name",
+      "version",
+      "license",
+      "language",
+      "source",
+      "download_url",
+      "split",
+      "preprocess"
+    ],
+    "benchmark_required_fields": [
+      "task_id",
+      "metric",
+      "evaluation_script",
+      "baseline_name",
+      "baseline_score",
+      "reproducibility_note"
+    ],
+    "pull_request_rules": [
+      "提交前需完成格式与脚本检查",
+      "新增任务必须包含 baseline 与样例输入输出",
+      "涉及数据集更新时必须同步版本号和变更日志"
+    ]
+  }
+}
+

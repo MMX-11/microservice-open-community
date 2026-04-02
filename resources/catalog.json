@@ -3,12 +3,12 @@
     {
       "name": "GitHub Community",
       "role": "代码、Issue、PR、评测流程统一协作",
-      "url": "https://github.com/your-org/patent-benchmark-community"
+      "url": "https://github.com/MMX-11/microservice-open-community"
     },
     {
       "name": "Hugging Face Hub",
       "role": "数据集与模型卡发布",
-      "url": "https://huggingface.co/your-org"
+      "url": "https://huggingface.co/MMX-11"
     },
     {
       "name": "OpenKG",
@@ -77,4 +77,3 @@
     ]
   }
 }
-

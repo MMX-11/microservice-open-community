@@ -27,9 +27,9 @@
     {
       "id": "patent_abstract_summarization_zh",
       "name": "专利摘要生成",
-      "type": "similarity",
-      "metric": "token_f1",
-      "description": "基于专利全文生成高质量摘要（演示版使用 token_f1）。",
+      "type": "summarization",
+      "metric": "rouge_l",
+      "description": "基于专利全文生成高质量摘要，评测指标采用 ROUGE-L。",
       "dataset": "patent-summarization-zh-v1",
       "baseline": {
         "name": "bart-base",
@@ -38,4 +38,3 @@
     }
   ]
 }
-

@@ -36,6 +36,13 @@ def _default_tasks() -> dict:
                 "metric": "token_f1",
                 "description": "Measure semantic alignment for patent query-response pairs.",
             },
+            {
+                "id": "patent_abstract_summarization_zh",
+                "name": "Patent Summarization",
+                "type": "summarization",
+                "metric": "rouge_l",
+                "description": "Generate patent abstracts and evaluate with ROUGE-L.",
+            },
         ]
     }
 
@@ -81,6 +88,43 @@ def _token_f1(predictions: list[str], references: list[str]) -> float:
     return round(total / len(references), 4)
 
 
+def _lcs_length(a: list[str], b: list[str]) -> int:
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = dp[i - 1][j] if dp[i - 1][j] >= dp[i][j - 1] else dp[i][j - 1]
+    return dp[m][n]
+
+
+def _rouge_l(predictions: list[str], references: list[str]) -> float:
+    if not references:
+        return 0.0
+
+    total_f = 0.0
+    for pred, ref in zip(predictions, references):
+        pred_tokens = _tokenize(pred)
+        ref_tokens = _tokenize(ref)
+
+        if not pred_tokens and not ref_tokens:
+            total_f += 1.0
+            continue
+        if not pred_tokens or not ref_tokens:
+            continue
+
+        lcs = _lcs_length(pred_tokens, ref_tokens)
+        precision = lcs / len(pred_tokens)
+        recall = lcs / len(ref_tokens)
+        if precision + recall == 0:
+            continue
+        total_f += (2 * precision * recall) / (precision + recall)
+
+    return round(total_f / len(references), 4)
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "service": "benchmark-service"}
@@ -101,10 +145,13 @@ def run_eval(payload: EvaluationRequest) -> dict:
     if len(payload.predictions) != len(payload.references):
         raise HTTPException(status_code=400, detail="predictions and references must have the same length")
 
-    task_type = task.get("type")
-    if task_type == "classification":
+    metric = (task.get("metric") or "").lower()
+    if metric == "accuracy":
         score = _accuracy(payload.predictions, payload.references)
         metric_name = "accuracy"
+    elif metric in {"rouge_l", "rouge-l"}:
+        score = _rouge_l(payload.predictions, payload.references)
+        metric_name = "rouge_l"
     else:
         score = _token_f1(payload.predictions, payload.references)
         metric_name = "token_f1"
@@ -128,6 +175,6 @@ def leaderboard() -> dict:
         "items": [
             {"task_id": "patent_classification_zh", "model_name": "baseline-tfidf", "metric": "accuracy", "score": 0.7621},
             {"task_id": "patent_semantic_matching_zh", "model_name": "baseline-sbert", "metric": "token_f1", "score": 0.6834},
+            {"task_id": "patent_abstract_summarization_zh", "model_name": "baseline-bart", "metric": "rouge_l", "score": 0.6012},
         ],
     }
-

@@ -52,12 +52,28 @@ docker compose up --build
 - UI: `http://localhost:8080/`
 - API 健康检查: `http://localhost:8080/api/health`
 
+## 2.1 公网访问（开源社区推荐）
+
+项目支持公网部署，不是只能本地访问。  
+如果你要让所有人访问你的社区，推荐使用 `Caddy + Docker Compose`：
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.public.yml up -d --build
+```
+
+详细步骤见：
+- `docs/public-deployment.md`
+
 ## 3. 核心能力
 
 - 统一管理 GitHub 仓库信息、Issues、任务状态
+- 社区首页四大模块：`文献任务榜`、`AI前沿`、`开源分享`、`主题论坛`
+- 内置 openKG-field 组织仓库联动，可一键跳转 GitHub 查看详细内容
+- 支持 PDF 内容提取后的结构化入库（示例见 `docs/extracted/`）
 - 统一展示任务基线、提交预测并返回评测分数
-- 集成大模型对话接口（OpenAI 兼容 API，便于切换华为云或其他推理节点）
+- 集成大模型对话接口（OpenAI 兼容 API，可接入免费模型渠道）
 - 统一管理数据集与工具资源（GitHub / Hugging Face / OpenKG 风格目录）
+- 管理员新增内容支持后端 SQLite 持久化（非浏览器本地存储）
 - 开箱即用的开源社区模板（Issue / PR / CI）
 
 ## 4. 对应四项需求的落地说明
@@ -72,6 +88,7 @@ docker compose up --build
 - `docs/platform-architecture.md`
 - `docs/github-integration-checklist.md`
 - `docs/huaweicloud-deployment.md`
+- `docs/public-deployment.md`
 - `docs/community-governance.md`
 
 ## 5. 后续扩展建议

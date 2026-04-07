@@ -9,3 +9,5 @@ __pycache__/
 .tmp_docx/
 
 chat-export-*.md
+data/*
+!data/.gitkeep

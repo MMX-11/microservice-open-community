@@ -8,12 +8,13 @@ from typing import Literal
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI(title="llm-service", version="0.1.0")
+app = FastAPI(title="llm-service", version="0.2.0")
 
 BASE_URL = os.getenv("OPENAI_COMPATIBLE_BASE_URL", "").rstrip("/")
 API_KEY = os.getenv("OPENAI_COMPATIBLE_API_KEY", "").strip()
 DEFAULT_MODEL = os.getenv("OPENAI_COMPATIBLE_MODEL", "gpt-4o-mini").strip() or "gpt-4o-mini"
 CHAT_PATH = os.getenv("OPENAI_COMPATIBLE_CHAT_PATH", "/v1/chat/completions").strip() or "/v1/chat/completions"
+TIMEOUT_SECONDS = int(os.getenv("LLM_TIMEOUT_SECONDS", "60"))
 
 
 class Message(BaseModel):
@@ -54,13 +55,19 @@ def _call_remote_chat(payload: ChatRequest) -> dict:
         headers["Authorization"] = f"Bearer {API_KEY}"
 
     req = urllib.request.Request(url=url, data=body, headers=headers, method="POST")
-    with urllib.request.urlopen(req, timeout=45) as resp:
+    with urllib.request.urlopen(req, timeout=TIMEOUT_SECONDS) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "service": "llm-service", "provider": "openai-compatible" if BASE_URL and API_KEY else "mock"}
+    return {
+        "status": "ok",
+        "service": "llm-service",
+        "provider": "openai-compatible" if BASE_URL and API_KEY else "mock",
+        "configured": bool(BASE_URL and API_KEY),
+        "model": DEFAULT_MODEL,
+    }
 
 
 @app.post("/chat")
@@ -94,4 +101,5 @@ def chat(payload: ChatRequest) -> dict:
         "response": _mock_reply(payload.messages),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
 

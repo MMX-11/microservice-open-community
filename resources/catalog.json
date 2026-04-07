@@ -1,56 +1,480 @@
 {
   "platforms": [
     {
-      "name": "GitHub Community",
-      "role": "代码、Issue、PR、评测流程统一协作",
-      "url": "https://github.com/MMX-11/microservice-open-community"
+      "name": "openKG-field GitHub Org",
+      "role": "社区主入口（仓库、Issue、PR、讨论）",
+      "url": "https://github.com/openKG-field"
+    },
+    {
+      "name": "PatentNLP-Benchmark",
+      "role": "专利任务评测与知识组织仓库",
+      "url": "https://github.com/openKG-field/PatentNLP-Benchmark"
     },
     {
       "name": "Hugging Face Hub",
-      "role": "数据集与模型卡发布",
-      "url": "https://huggingface.co/MMX-11"
+      "role": "模型与数据集发布",
+      "url": "https://huggingface.co/"
     },
     {
       "name": "OpenKG",
-      "role": "知识图谱与数据开放参考生态",
+      "role": "知识图谱开放生态参考",
       "url": "https://www.openkg.cn/"
-    },
-    {
-      "name": "Huawei Cloud",
-      "role": "网站节点、容器部署、对象存储",
-      "url": "https://www.huaweicloud.com/"
     }
   ],
   "datasets": [
     {
-      "name": "patent-classification-zh-v1",
+      "name": "patent-translation-zh-en-v1",
       "license": "CC BY-NC 4.0",
-      "language": "zh",
-      "storage": "Hugging Face Dataset + OBS 备份",
+      "language": "zh/en",
+      "storage": "GitHub + Hugging Face",
       "version": "1.0.0"
     },
     {
-      "name": "patent-semantic-matching-zh-v1",
+      "name": "patent-summarization-zh-v1",
       "license": "CC BY-NC 4.0",
       "language": "zh",
-      "storage": "Hugging Face Dataset + OBS 备份",
+      "storage": "GitHub + Hugging Face",
+      "version": "1.0.0"
+    },
+    {
+      "name": "patent-kg-extraction-zh-v1",
+      "license": "CC BY-NC 4.0",
+      "language": "zh",
+      "storage": "GitHub + Hugging Face",
       "version": "1.0.0"
     }
   ],
   "tasks": [
     {
-      "task_id": "patent_classification_zh",
-      "metric": "accuracy",
-      "submission_format": "每行一个标签，顺序与 references 对齐",
+      "task_id": "patent_translation_zh_en",
+      "metric": "BLEU / ROUGE",
+      "submission_format": "每行一个翻译结果，与 references 行对齐",
       "owner_team": "benchmark-maintainers"
     },
     {
-      "task_id": "patent_semantic_matching_zh",
-      "metric": "token_f1",
-      "submission_format": "每行一个预测文本，按空格分词评估",
+      "task_id": "patent_summarization_zh",
+      "metric": "ROUGE-L",
+      "submission_format": "每行一个摘要结果，与 references 行对齐",
       "owner_team": "benchmark-maintainers"
+    },
+    {
+      "task_id": "patent_knowledge_extraction_zh",
+      "metric": "F1",
+      "submission_format": "JSONL: subject/predicate/object",
+      "owner_team": "benchmark-maintainers"
+    },
+    {
+      "task_id": "patent_knowledge_representation_zh",
+      "metric": "MRR / Hits@K",
+      "submission_format": "JSONL: head/relation/tail",
+      "owner_team": "kg-maintainers"
+    },
+    {
+      "task_id": "patent_semantic_matching_zh",
+      "metric": "Accuracy / F1",
+      "submission_format": "每行一个标签或分数",
+      "owner_team": "nlp-maintainers"
+    },
+    {
+      "task_id": "patent_multimodal_generation",
+      "metric": "CLIPScore / Human Eval",
+      "submission_format": "JSON: text_prompt -> generated_asset_url",
+      "owner_team": "multimodal-maintainers"
     }
   ],
+  "literature_taskboard": [
+    {
+      "title": "机器翻译（专利跨语种）",
+      "task": "patent_translation_zh_en",
+      "metric": "BLEU / ROUGE",
+      "dataset": "patent-translation-zh-en-v1",
+      "baseline": "Transformer / mBART",
+      "github_url": "https://github.com/openKG-field/PatentGLUE_MT",
+      "paper_note": "来自专利任务体系：翻译、摘要、知识抽取、表示、语义匹配、多模态"
+    },
+    {
+      "title": "自动摘要（专利长文本）",
+      "task": "patent_summarization_zh",
+      "metric": "ROUGE-L",
+      "dataset": "patent-summarization-zh-v1",
+      "baseline": "PEGASUS / BART",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark",
+      "paper_note": "适配论文中的摘要评测场景"
+    },
+    {
+      "title": "知识抽取（关系抽取）",
+      "task": "patent_knowledge_extraction_zh",
+      "metric": "Entity-F1 / Relation-F1",
+      "dataset": "patent-kg-extraction-zh-v1",
+      "baseline": "BERT + CRF",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark",
+      "paper_note": "面向知识图谱构建"
+    },
+    {
+      "title": "知识表示（KG Embedding）",
+      "task": "patent_knowledge_representation_zh",
+      "metric": "MRR / Hits@10",
+      "dataset": "patent-kg-extraction-zh-v1",
+      "baseline": "TransE / RotatE",
+      "github_url": "https://github.com/openKG-field/kgbook-2020",
+      "paper_note": "用于后续知识检索与推理"
+    },
+    {
+      "title": "语义匹配（检索与对齐）",
+      "task": "patent_semantic_matching_zh",
+      "metric": "Accuracy / F1",
+      "dataset": "patent-semantic-matching-zh-v1",
+      "baseline": "SBERT / BERTGAT",
+      "github_url": "https://github.com/openKG-field/SciGPT",
+      "paper_note": "论文核心任务之一"
+    },
+    {
+      "title": "多模态（文生图辅助专利理解）",
+      "task": "patent_multimodal_generation",
+      "metric": "CLIPScore / Human Eval",
+      "dataset": "patent-multimodal-v1",
+      "baseline": "Diffusion Baseline",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark",
+      "paper_note": "用于创新点可视化表达"
+    }
+  ],
+  "ai_frontier": [
+    {
+      "title": "基于微服务容器化的分布式开源社区实现（曹政等，2023）",
+      "type": "社区工程实践",
+      "summary": "强调用容器编排和自动化运维提升社区的可扩展性与维护效率。",
+      "reference_url": "https://doi.org/10.11907/rjdk.221677",
+      "github_url": "https://github.com/openKG-field"
+    },
+    {
+      "title": "分层阅读式信息结构",
+      "type": "交互设计方法",
+      "summary": "适合把复杂信息拆成目录、正文和外链三层，提升阅读和跳转效率。",
+      "reference_url": "https://zread.ai/instructkr/claude-code/3-source-snapshot-background",
+      "github_url": "https://github.com/openKG-field"
+    },
+    {
+      "title": "模型预测控制学习入口",
+      "type": "方法论前沿",
+      "summary": "可作为算法专题扩展方向，补齐控制与优化类任务的知识背景。",
+      "reference_url": "https://hrl.boyuai.com/chapter/3/%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E6%8E%A7%E5%88%B6/",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark"
+    },
+    {
+      "title": "实践型知识库模板",
+      "type": "工作流沉淀",
+      "summary": "用于沉淀提示词、实验记录、复现流程与问题清单，方便团队协作。",
+      "reference_url": "https://waytoagi.feishu.cn/wiki/MdNUwjXUZiuKLCkN4YrcNSZcnFb?table=tblwdvsWICkId67f&view=vewJuuzsne",
+      "github_url": "https://github.com/openKG-field"
+    }
+  ],
+  "open_source_sharing": [
+    {
+      "title": "出版物附带资源模板",
+      "category": "publication-kit",
+      "description": "论文/报告配套代码、数据、实验脚本与复现说明。",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark",
+      "detail_url": "https://github.com/openKG-field/PatentNLP-Benchmark/blob/main/README.md"
+    },
+    {
+      "title": "基准结果发布模板",
+      "category": "benchmark-release",
+      "description": "统一提交模型卡、指标表、运行环境与变更日志。",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues",
+      "detail_url": "https://github.com/openKG-field/PatentNLP-Benchmark/pulls"
+    }
+  ],
+  "topic_forum": [
+    {
+      "topic": "任务对比报告",
+      "goal": "围绕同一任务定期发布模型横向对比分析。",
+      "discussion_url": "https://github.com/openKG-field/PatentNLP-Benchmark/discussions",
+      "issue_url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues/new"
+    },
+    {
+      "topic": "趋势预测与路线讨论",
+      "goal": "讨论下阶段重点任务、数据建设和评测指标调整。",
+      "discussion_url": "https://github.com/openKG-field/discussions",
+      "issue_url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues"
+    },
+    {
+      "topic": "论文复现与技术问答",
+      "goal": "复现实验、记录问题与形成可复用FAQ。",
+      "discussion_url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues",
+      "issue_url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues/new"
+    }
+  ],
+  "pdf_research_highlights": [
+    {
+      "title": "论文主题：基于微服务容器化的分布式开源社区实现",
+      "module": "开源分享",
+      "source": "曹政等（2023）",
+      "summary": "论文提出以微服务+容器编排改造开源社区，目标是提升部署效率、降低运维复杂度并增强扩展能力。",
+      "reference_url": "https://doi.org/10.11907/rjdk.221677",
+      "github_url": "https://github.com/openKG-field"
+    },
+    {
+      "title": "架构方法：DDD 边界划分 + 微服务拆分",
+      "module": "文献任务榜",
+      "source": "PDF提取内容",
+      "summary": "建议使用领域驱动设计（DDD）进行限界上下文划分，避免微服务粒度失衡导致治理复杂度上升。",
+      "reference_url": "https://doi.org/10.11907/rjdk.221677",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark"
+    },
+    {
+      "title": "部署结论：Kubernetes 在编排与自动化方面优势明显",
+      "module": "AI前沿",
+      "source": "PDF提取内容",
+      "summary": "文中对比显示，Kubernetes 在可视化监控、自动化运维、弹性伸缩方面优于单纯 Docker 方式。",
+      "reference_url": "https://doi.org/10.11907/rjdk.221677",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark/discussions"
+    },
+    {
+      "title": "运维能力：探针与 HPA 支撑高可用与弹性扩缩",
+      "module": "主题论坛",
+      "source": "PDF提取内容",
+      "summary": "通过 liveness/readiness 探针与 HPA 机制，可实现集群级自动化修复与按负载伸缩。",
+      "reference_url": "https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues"
+    },
+    {
+      "title": "边缘计算前景：K3s + MEC 适配轻量场景",
+      "module": "AI前沿",
+      "source": "PDF提取内容",
+      "summary": "论文指出轻量化编排工具 K3s 与 MEC 场景结合可提升边缘节点部署效率与服务弹性。",
+      "reference_url": "https://doi.org/10.11907/rjdk.221677",
+      "github_url": "https://github.com/openKG-field"
+    },
+    {
+      "title": "实施风险：编排系统复杂度与迁移策略需前置规划",
+      "module": "开源分享",
+      "source": "PDF提取内容",
+      "summary": "核心挑战包括 Kubernetes 部署复杂、迁移策略选择、镜像治理与接口标准统一问题。",
+      "reference_url": "https://doi.org/10.11907/rjdk.221677",
+      "github_url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues/new"
+    }
+  ],
+  "reading_docs": [
+    {
+      "id": "community_blueprint_2026",
+      "title": "社区建设蓝图（2026）",
+      "subtitle": "面向专利任务评测与开源协作的模块化站点设计",
+      "source": "基于论文提取 + 参考站点结构",
+      "updated_at": "2026-04-06",
+      "sections": [
+        {
+          "id": "reading-context",
+          "title": "背景与目标",
+          "body": "站点目标是统一承载任务评测、项目协作、知识沉淀和社区讨论。核心追求是让研究内容从“论文与仓库分离”转向“任务-数据-算法-讨论一体化”。",
+          "highlights": [
+            "以四大模块构成首页信息骨架",
+            "所有条目提供 GitHub 深入入口",
+            "通过免费大模型辅助运营更新"
+          ],
+          "references": [
+            {
+              "label": "openKG-field",
+              "url": "https://github.com/openKG-field"
+            }
+          ]
+        },
+        {
+          "id": "reading-architecture",
+          "title": "架构设计与微服务策略",
+          "body": "采用 API 网关聚合 community/benchmark/resource/llm 多服务。通过容器化部署提升迁移与扩缩效率，后续可接入 Kubernetes 做可视化运维和自动伸缩。",
+          "highlights": [
+            "API 网关统一对外接口",
+            "资源服务承担知识库与分类中心",
+            "社区服务负责 GitHub 组织联动"
+          ],
+          "references": [
+            {
+              "label": "微服务容器化论文 DOI",
+              "url": "https://doi.org/10.11907/rjdk.221677"
+            }
+          ]
+        },
+        {
+          "id": "reading-ux",
+          "title": "阅读体验与信息组织",
+          "body": "采用分层阅读结构，将复杂信息拆分为“目录 + 主文 + 外链”。结合知识表与联动视图，支持管理者快速定位内容并持续补充。",
+          "highlights": [
+            "阅读页强调章节导览与锚点跳转",
+            "知识表强调筛选、状态、标签",
+            "联动视图强调论文-项目-数据集关系"
+          ],
+          "references": [
+            {
+              "label": "信息分层设计示例",
+              "url": "https://zread.ai/instructkr/claude-code/3-source-snapshot-background"
+            }
+          ]
+        },
+        {
+          "id": "reading-ops",
+          "title": "运营闭环",
+          "body": "管理员新增内容时，先归类再打标签，再将链接写入数据库。每条内容可通过模型生成发布摘要，并在论坛模块组织讨论与复盘。",
+          "highlights": [
+            "内容新增改为后端持久化",
+            "支持社区演进与审计留痕",
+            "可按模块形成周报或月报"
+          ],
+          "references": [
+            {
+              "label": "实践知识库示例",
+              "url": "https://waytoagi.feishu.cn/wiki/MdNUwjXUZiuKLCkN4YrcNSZcnFb?table=tblwdvsWICkId67f&view=vewJuuzsne"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "knowledge_entries": [
+    {
+      "module": "文献任务榜",
+      "type": "benchmark",
+      "title": "专利机器翻译基线对比",
+      "tags": ["translation", "BLEU", "ROUGE"],
+      "status": "active",
+      "source": "paper+repo",
+      "updated_at": "2026-04-06",
+      "url": "https://github.com/openKG-field/PatentGLUE_MT"
+    },
+    {
+      "module": "文献任务榜",
+      "type": "dataset",
+      "title": "patent-summarization-zh-v1 数据说明",
+      "tags": ["summarization", "dataset"],
+      "status": "active",
+      "source": "catalog",
+      "updated_at": "2026-04-06",
+      "url": "https://github.com/openKG-field/PatentNLP-Benchmark"
+    },
+    {
+      "module": "AI前沿",
+      "type": "paper",
+      "title": "基于微服务容器化的分布式开源社区实现",
+      "tags": ["microservice", "kubernetes", "devops"],
+      "status": "active",
+      "source": "pdf_extract",
+      "updated_at": "2026-04-06",
+      "url": "https://doi.org/10.11907/rjdk.221677"
+    },
+    {
+      "module": "AI前沿",
+      "type": "tutorial",
+      "title": "模型预测控制（MPC）学习路线",
+      "tags": ["MPC", "control", "RL"],
+      "status": "watch",
+      "source": "external",
+      "updated_at": "2026-04-06",
+      "url": "https://hrl.boyuai.com/chapter/3/%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E6%8E%A7%E5%88%B6/"
+    },
+    {
+      "module": "开源分享",
+      "type": "template",
+      "title": "出版物附带资源模板",
+      "tags": ["publication", "reproducibility"],
+      "status": "active",
+      "source": "repo",
+      "updated_at": "2026-04-06",
+      "url": "https://github.com/openKG-field/PatentNLP-Benchmark/blob/main/README.md"
+    },
+    {
+      "module": "开源分享",
+      "type": "workflow",
+      "title": "WaytoAGI 知识沉淀流程",
+      "tags": ["workflow", "prompt", "knowledge-base"],
+      "status": "active",
+      "source": "external",
+      "updated_at": "2026-04-06",
+      "url": "https://waytoagi.feishu.cn/wiki/MdNUwjXUZiuKLCkN4YrcNSZcnFb?table=tblwdvsWICkId67f&view=vewJuuzsne"
+    },
+    {
+      "module": "主题论坛",
+      "type": "discussion",
+      "title": "语义匹配任务月度复盘讨论串",
+      "tags": ["semantic-matching", "review"],
+      "status": "open",
+      "source": "github",
+      "updated_at": "2026-04-06",
+      "url": "https://github.com/openKG-field/PatentNLP-Benchmark/discussions"
+    },
+    {
+      "module": "主题论坛",
+      "type": "issue",
+      "title": "新增任务提案与指标修订",
+      "tags": ["proposal", "metric", "governance"],
+      "status": "open",
+      "source": "github",
+      "updated_at": "2026-04-06",
+      "url": "https://github.com/openKG-field/PatentNLP-Benchmark/issues/new"
+    }
+  ],
+  "paper_project_dataset_links": [
+    {
+      "paper": "基于微服务容器化的分布式开源社区实现（2023）",
+      "project": "PatentNLP-Benchmark",
+      "dataset": "patent-summarization-zh-v1",
+      "task": "patent_summarization_zh",
+      "benchmark": "ROUGE-L",
+      "paper_url": "https://doi.org/10.11907/rjdk.221677",
+      "project_url": "https://github.com/openKG-field/PatentNLP-Benchmark",
+      "dataset_url": "https://github.com/openKG-field/PatentNLP-Benchmark"
+    },
+    {
+      "paper": "基于微服务容器化的分布式开源社区实现（2023）",
+      "project": "PatentGLUE_MT",
+      "dataset": "patent-translation-zh-en-v1",
+      "task": "patent_translation_zh_en",
+      "benchmark": "BLEU / ROUGE",
+      "paper_url": "https://doi.org/10.11907/rjdk.221677",
+      "project_url": "https://github.com/openKG-field/PatentGLUE_MT",
+      "dataset_url": "https://github.com/openKG-field/PatentGLUE_MT"
+    },
+    {
+      "paper": "专利语义匹配相关研究",
+      "project": "SciGPT",
+      "dataset": "patent-semantic-matching-zh-v1",
+      "task": "patent_semantic_matching_zh",
+      "benchmark": "Accuracy / F1",
+      "paper_url": "https://github.com/openKG-field/SciGPT",
+      "project_url": "https://github.com/openKG-field/SciGPT",
+      "dataset_url": "https://github.com/openKG-field/SciGPT"
+    },
+    {
+      "paper": "知识图谱工程与表示学习",
+      "project": "kgbook-2020",
+      "dataset": "patent-kg-extraction-zh-v1",
+      "task": "patent_knowledge_representation_zh",
+      "benchmark": "MRR / Hits@10",
+      "paper_url": "https://github.com/openKG-field/kgbook-2020",
+      "project_url": "https://github.com/openKG-field/kgbook-2020",
+      "dataset_url": "https://github.com/openKG-field/PatentNLP-Benchmark"
+    }
+  ],
+  "manager_taxonomy": {
+    "main_modules": [
+      "文献任务榜",
+      "AI前沿",
+      "开源分享",
+      "主题论坛"
+    ],
+    "task_axes": [
+      "机器翻译",
+      "自动摘要",
+      "知识抽取",
+      "知识表示",
+      "语义匹配",
+      "多模态"
+    ],
+    "ingest_flow": [
+      "发现外部内容",
+      "分类到四大模块",
+      "补充元数据与来源",
+      "发布到社区并留痕"
+    ]
+  },
   "contribution_spec": {
     "dataset_required_fields": [
       "name",

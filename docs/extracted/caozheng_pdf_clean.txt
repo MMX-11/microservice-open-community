@@ -1,0 +1,1236 @@
+===== PAGE 1 =====
+第 22 卷 第 7 期
+2023 年 7 月
+Vol. 22 No. 7
+Jul. 2023
+软 件 导 刊
+Software Guide
+基于微服务容器化的分布式开源社区实现
+曹 政 1，2， 王 楠 1，3， 李宝安1，3， 孙千惠4， 靳海涛3， 李树超5
+（1. 北京信息科技大学 网络文化与数字传播北京市重点实验室， 北京 100192；
+2. 北京信息科技大学 应用技术学院， 北京 100096；3. 北京信息科技大学 计算机学院， 北京 100192；
+4. 中国昆仑工程有限公司， 北京 100037；5. 中国科学院空天信息创新研究院， 北京 100190）
+摘 要： 随着计算机软件应用场景的不断增多， 软件开发面临诸多问题， 各类开发框架也逐渐出现运维、 部署、 耦合
+度、 框架设计等方面的困难。针对以上问题， 提出通过微服务容器化实现开源社区整体架构的高效部署与自动化运
+维， 以简化部署过程、 降低运维难度。通过介绍微服务与容器化技术的发展历程、 容器化关键技术与开源工具， 着重
+论述微服务及容器编排工具在服务间通信与自动化运维等领域内的互补性， 分析并论证 Kubernetes 的优点与 Docker
+的缺点， 以证明微服务容器化的优势。在应用部署方面， 以简单开源社区服务应用为例， 将传统单体架构应用改造成
+微服务容器化服务以论述其优势和特点， 并论述了微服务容器化在移动边缘计算领域的发展前景与应用实例。最后
+总结并讨论了微服务容器化的潜在问题及未来挑战。
+关键词： 微服务； 开源社区； 容器化； 移动边缘计算
+DOI：10. 11907/rjdk. 221677 开 放 科 学 （资 源 服 务） 标 识 码 （OSID）：
+中图分类号：TP393.09 文献标识码： A 文章编号：1672-7800（2023）007-0085-13
+Distributed Open Source Community Implementation Based on
+Microservice Containerization
+CAO Zheng1，2， WANG Nan1，3， LI Baoan1，3， SUN Qianhui4， JIN Haitao3， LI Shuchao5
+（1. Beijing Key Laboratory of Internet Culture and Digital Dissemination Research ， Beijing Information Science and Technology University ， Bei⁃
+jing 100192， China；2. School of Applied Technology ， Beijing Information Science and Technology University ， Beijing 100096， China；
+3. Computer School ， Beijing Information Science and Technology University ， Beijing 100192， China；4. China Kunlun Contracting & Engineer⁃
+ing Corporation ， Beijing 100037， China；5. Aerospace Information Research Institute ， Chinese Academy of Sciences ， Beijing 100190， China）
+Abstract ： With the increasing number of computer software application scenarios ， software development is faced with many problems ， and
+various development frameworks have gradually encountered difficulties in operation and maintenance ， deployment ， coupling ， and framework
+design. In view of the above problems ， it is proposed to realize the efficient deployment and automatic operation and maintenance of the overall
+architecture of the open source community through the containerization of microservices ， and simplify the deployment process and the difficul‐
+ty of operation and maintenance. By introducing the development history of microservices and containerization technology ， key containerization
+technologies and open source tools ， this paper focuses on the complementarity of microservices and container orchestration tools in inter-ser‐
+vice communication and automated operation and maintenance ， and analyzes and demonstrates the advantages of Kubernetes and the disadvan‐
+tages of Docker ， to demonstrate the benefits of microservice containerization. In terms of application deployment ， taking a simple open source
+收稿日期：2022-06-27
+基金项目 ：国家自然科学基金项目 （61671070） ； 北京市自然科学基金项目 （4212020） ； 北京信息科技大学科研基金项目 （2021XJJ27） ；
+北京信息科技大学大学生创新创业训练计划项目 （5112310855）
+作者简介 ：曹政 （2000-） ， 男，CCF 学生会员， 北京信息科技大学网络文化与数字传播北京市重点实验室学生， 研究方向为微服务、 容器
+技术； 王楠 （1987-） ， 男， 博士，CCF 会员， 北京信息科技大学计算机学院讲师， 研究方向为人工智能、 领域大数据架构、 自然
+语言理解； 李宝安 （1965-） ， 男， 硕士，CCF 高级会员， 北京信息科技大学计算机学院教授， 研究方向为服务计算、 社会计算、
+分布式系统、 企业信息化； 孙千惠 （1990-） ， 女， 硕士， 中国昆仑工程有限公司高级工程师， 研究方向为企业级云计算服务、 大
+数据处理解决方案； 靳海涛 （1983-） ， 男， 博士， 北京信息科技大学计算机学院高级工程师， 研究方向为地理信息大数据、 数
+据科学、 机器学习； 李树超 （1990-） ， 男， 硕士， 中国科学院空天信息创新研究院助理研究员， 研究方向为大规模知识图谱、 自
+然语言处理、 深度学习。本文通讯作者： 王楠。
+===== PAGE 2 =====
+2023 年软 件 导 刊
+community service application as an example ， the traditional monolithic architecture application is transformed into a microservice container‐
+ized service to discuss its advantages and characteristics ， and the development of microservice containerization in the field of mobile edge com‐
+puting is discussed later. Finally ， the potential problems and future challenges of microservice containerization are summarized and discussed.
+Key Words ： microservices ； open source community ； containerization ； moblie edge computing
+1 研究背景与现状
+随着互联网的发展， 云计算与大数据、 人工智能等技
+术推动了整个社会的信息化进程。但软件应用系统变得
+更加复杂、 庞大且笨重， 原有框架已无法满足各类软件开
+发过程中的部署及运维等方面的需求。因此， 众多企业和
+机构通过反复探索与实践， 提出了多种开发框架模式以解
+决上述问题。
+在应用部署、 服务治理、 解耦及持续交付方面， 微服务
+相对于传统框架有着诸多优势， 特别是持续交付
+［1］： 由于
+微服务架构对业务的拆解粒度更小， 使得集群运维变得更
+加重要。于是学者们提出了容器化思想， 利用容器化技术
+在部署及运维等方面的优势促进微服务容器化的发展
+［2］。
+1.1 微服务研究
+在微服务问世之前， 软件工程师们提供了各种方式以
+构建拥有广泛功能的系统 ——从早期的面向对象 ［3］的设
+计模式、 面向服务的计算 （SOC） 、 面向服务的架构 （SOA） ，
+到微服务概念的提出， 在此过程中服务粒度越分越细， 细
+分到已无法保证系统架构在不断拆分中仍能将系统的复
+杂度保持在一个较为合理的区间内
+［4］。所以要通过一种
+方式寻找微服务的边界， 以更好地划分服务， 提高开发效
+［5］。除划分服务边界外， 微服务技术需要更具体的方案
+及框架才能实现， 全球互联网公司都在尝试开发落地自己
+的微服务技术。下面将介绍如何利用领域驱动设计划分
+微服务组件与目前较为知名的微服务架构。
+1.1.1 领域驱动设计
+Evans 等［6］在 2004 年时提出一种用于业务功能领域建
+模 的 框 架 与 思 想—— 领 域 驱 动 设 计 （Domain-Driven De‐
+sign，DDD） 。该思想致力于实现的目标为： 交付令用户满
+意、 可持续、 可不断演进的复杂软件。
+DDD 设计分为两部分： 战略设计与战术设计。战略阶
+段 强 调 从 宏 观 领 域 看 待 系 统 架 构［7］， 架 构 分 层 如 图1
+所示［8］。
+其次是战术设计阶段， 也即代码设计阶段。其使用聚
+合、 实体、 值对象等对象概念表达和完善领域模型的细枝
+［9］， 到这里就大致完成了DDD 设计。上文也提到微服
+务在业务团队治理、 运维等方面有着先天优势， 但合理的
+微服务粒度是实现微服务架构的前提
+［5］。而 DDD 提出将
+已划分好的限界上下文 （Bounded Context ，BC） 清晰业务边
+界的概念引进微服务， 并以此实现了微服务框架。
+1.1.2 微服务架构简介
+相较于传统垂直架构， 微服务架构的具体优势及特点
+如下［10］：
+（1） 技术栈不限。相对于单体架构项目需要选择统一
+的技术栈， 微服务架构可以将每个微服务应用作为一个独
+立的应用进行维护。
+（2） 扩展性强。可针对单点微服务应用的特点及需求
+快速扩展， 以满足该节点的业务需求［11］。
+（3） 可单独部署。相对于单体应用代码量大、 耦合度
+高等特点， 单个应用进程独立且代码量小， 可实现独立、 高
+［12］。
+（4） 开发与维护方便。单个应用只需关注其特定的业
+务功能， 通过定义好的接口来表述服务边界。
+（5） 容错性强。某一服务发生故障， 运维人员可将故
+障局限于该服务中进行修改， 并在其他节点中重启该应用
+以继续提供服务。
+微服务架构在日常开发维护、 容错性及弹性扩容等方
+面 具 有 很 大 优 势 。 目 前 较 为 流 行 的 开 源 框 架 规 范 为
+SpringCloud ， 其基于SpringBoot 对深层架构的再次封装， 为
+开发人员提供了在分布式系统中快速构建微服务应用的
+常用工具， 如配置管理、 服务发现、 断路器、 智能路由、 微代
+理、 控制总线、 分布式会话、 集群管理等。另一种应用较多
+的框架 Dubbo
+［13］是由 Alibaba 开发， 并捐给Apache 维护的
+一个高性能、 轻量级的 Java RPC 框架， 通过表1 简单说明
+两者的关键技术与异同。
+Frontend
+Backend (BFF)
+Application
+Microservices Microservice
+Microservice
+without domain logic
+Fig. 1 Architecture layering
+图 1 架构分层
+Table 1 Comparison of the key technical components between the
+Dubbo and SpringCloud
+表 1 两者关键技术组件对比
+注册中心
+服务远程调用
+配置中心
+服务网关
+服务监控与保护
+Dubbo
+zookeeper、Redis
+Dubbo
+dubbo-admin
+SpringCloud
+Eureka、Consul
+Feign
+Config
+Gateway、Zuul
+Hystix
+· ·86
+===== PAGE 3 =====
+第 7 期 曹 政， 王 楠， 李宝安， 等： 基于微服务容器化的分布式开源社区实现
+1.1.3 微服务架构面临的挑战
+一个大型互联网项目所需的微服务组件包括但不限
+于： 服务网关、 注册中心、 配置中心、 服务集群、 消息队列、
+分 布 式 存 储 、 分 布 式 搜 索 等 。 用 户 通 过 服 务 网 关 （Gate‐
+Way） 接入整个业务体系。由于各微服务松耦合、 彼此访
+问， 几乎所有的非业务功能如负载均衡、 服务认证、 访问限
+制等均需服务网关来处理， 但缺点也很明显：
+（1） 服务彼此依赖， 某一服务的异常都可能导致一部
+分检测服务不可用［14］。
+（2） 以人工为主的部署， 备份/可用性 /一致性差［15］， 无
+法做到横向自动扩缩容。
+因此， 只有探索软件平台能够实现服务部署、 自动化
+运维、 弹性伸缩等特性的方案， 才能解决目前框架所遇到
+的问题［16］。服务间尽可能减少依赖， 各自独立运行， 能够
+实现高效访问， 因此推动了虚拟化技术， 特别是基于虚拟
+化的容器技术的发展。随着该技术的蓬勃发展， 为软件开
+发者提供了一种新思路。
+1.2 容器技术
+容器技术起源于虚拟化技术， 无论是传统意义上基于
+KVM 的虚拟机还是容器， 均属于虚拟化的一种表现形式。
+但相对于虚拟机， 容器更加轻便， 原因如下： 虚拟机需要在
+物理机操作系统上运行自己的一系列系统进程 （ 需要独立
+的操作系统， 系统进程与物理机完全隔离 ） ， 而其中产生的
+除必要的业务组件外的性能损耗导致无法为专门的业务
+应用配置一台虚拟机， 最终需要将多个应用组件分组塞入
+不同的虚拟机中
+［17］。虚拟机与容器对比如图 2 所示［18］。
+容器的隔离机制会阻止一些容器内的进程监视另一
+个容器内的进程 ［19］。同时， 这些容器服务不会干扰物理
+机。 Felter 等［20］也通过 VM 与容器部署性能的对比， 证明
+了在几乎所有情况下， 容器的性能与 VM 相同或更好。所
+以通过容器技术将多个分散在不同物理机上的服务合而
+为一的做法是可行的， 这也是众多数据中心采用该技术的
+原因之一。此外， 容器技术还包含以下特性
+［21-22］：
+（1） 安全性。容器中可正常实现网络功能， 而由于容
+器的隔离机制， 也可以限制一些危险操作。由于每个容器
+之间是封闭的， 所以对单个容器的网络攻击不会影响其他
+容器或系统进程。
+（2） 隔离性。容器允许在一个物理机内运行多个应用
+程序， 每个应用程序都会分配到单独的域以独享各自的资
+源。与此同时， 也会给每个容器分配各自的 IP 地址， 在运
+行多个应用时会使用统一的物理网络接口来保持应用 /服
+务间的通信。
+（3） 可移植性。容器将所需资源 （函数库、 环境等） 打
+包成镜像， 利用容器的隔离机制可以将应用部署在任何地
+方， 在具备便捷性的同时， 也兼具了灵活性。
+（4） 速度。相对于虚拟机动辄几十秒甚至数分钟的启
+动及停止时间， 容器的启动及停止时间只需几秒， 提高了
+开发和运维工作效率， 提升了用户体验。
+1.3 容器编排技术
+随着容器化技术的发展， 开发人员可通过如 Docker、
+LXC 等容器平台构建并运行镜像及容器， 但生产环境远比
+开发及测试环境复杂。无论是传统架构还是微服务架构
+的应用， 均涉及对一个或多个容器集群的管理， 而容器技
+术对单个开发人员效率的提升并不能转化为对整个应用
+集群管理效率的提升， 容器集群化需实现智能化、 自动化
+［23］。而容器编排技术可以实现对容器进行自动化部
+署、 管理、 扩展等操作，Zhong 等［24］详细讨论了将机器学习
+用于容器编排方面的工作。使用容器编排可实现容器集
+群 的 高 可 用 、 服 务 集 群 的 弹 性 伸 缩 、 负 载 均 衡 与 安 全
+［25］。
+容器编排工具也提供了用于大规模管理容器集群与
+微服务架构的框架 ［25］， 代表产品有Docker Swarm 、Apache
+Mesos 与 Kubernetes ， 本文将着重介绍Kubernetes 。
+1.4 小结
+如今， 随着云计算技术的发展和企业应用规模的扩
+展， 企业应用逐渐从单体应用向微服务架构转换［26］。而传
+统的微服务部署模式， 不仅复杂繁琐， 而且资源利用率低
+下， 不利于扩展与更新。所以实现微服务部署的简化是一
+个亟待解决的问题， 而容器技术提供了新的解决思路
+［27］。
+容器技术 +容器编排工具是国内外现阶段平台建设领域的
+主流， 可通过使用容器化技术将每个服务实例运行在独立
+的容器中
+［16］。容器作为轻量级应用， 镜像构件和运行速度
+极快， 甚至可在一个物理机或虚拟机上运行多个容器 ［28］。
+与此同时， 使用容器编排工具对这些容器进行管理， 可充
+容器编排工具对集群节点的自动化管理特性， 实现
+业务服务器集群的自我修复、 弹性伸缩、 服务发现、 负载均
+衡等功能。
+2 容器化关键技术
+2.1 高可用技术
+高可用技术是指主要通过软件手段实现故障快速恢
+复功能， 使计算机系统具备很高的可用性的一种技术 ［29］。
+一个成熟的高可用集群系统应具有以下特性 ［30］：
+GUSET
+GUSET
+GUSET
+HYPERVISOR
+HOST OPERATING SYSTEM HOST OPERATING SYSTEM
+VIRTUALIZATION CONTAINERS
+APP APP
+SUPPORTING FILES
+RUNTIME
+SUPPORTING FILES
+RUNTIME
+APP APPAPP
+Fig. 2 Comparison between virtual machine and container
+图 2 虚拟机与容器对比
+· ·87
+===== PAGE 4 =====
+2023 年软 件 导 刊
+（1） 独立的冗余部件。采取独立的冗余部件后， 当其
+中一个部件发生故障时， 其他部件能够很好地接替其继续
+（2） 心跳技术。心跳技术能够很方便地发现集群系统
+中出现故障的节点。
+（3） 故障接管技术。当发现故障节点后， 要及时对故
+障节点进行接管， 该技术允许其他正常节点继续提供原来
+由故障节点所提供的服务。
+目 前 比 较 具 有 代 表 性 的 高 可 用 系 统 包 括 Heart‐
+Beat
+［31］、OpenSSI［32］等， 接下来以Kubernetes［33］（K8s） 为例。
+K8s 集群在生产环境中实现高可用特性的前提， 是必须实
+现对 Master 节点及其核心组件的高可用特性 ［34］。
+Kubernetes 官 网 给 出 了 两 种 搭 建 高 可 用 集 群 的 方
+式［35］： 一种是混合部署， 将每个Master 节点的 etcd（ 一种分
+布式 key-value 存储， 用于保存K8s 集群所有的网络配置与
+对象状态配置 ） 组成集群； 另一种则是单独部署， 在集群外
+单独搭建 etcd 集群。无论采用哪种方式， etcd 在该过程中
+扮演了重要角色： 利用etcd 的强一致性， 保证分布式高并
+发的情况下 Master 节点的全局唯一性， 并确保了容器集群
+运行的稳定性。其中， 采用混合部署方式构建高可用集群
+的具体结构如图 3 所示
+［36］。
+在保证主节点高可用的同时， 还需保证集群内节点的
+高可用。此时需对集群内容器进行探测， 若工作状态不正
+常应给予移除， 同时要对容器所在的 Pod 重启， 保证节点
+的高可用 （在K8s 中 Pod 是最小控制单元， 而容器运行在
+Pod 中 ） 。K8s 提供了两种探针实现容器探测 ［37］：
+（1）liveness probes 。 其 主 要 功 能 为 检 测 容 器 运 行 状
+态， 若状态不正常则重启容器。
+（2）readiness probes 。其主要功能是测试当前应用能
+否接收请求， 若不能则集群不会转发流量。
+通过保证集群主节点的高可用和对容器集群内应用
+的状态探测，K8s 有效保证了整个集群的高可用特性。
+2.2 高效部署
+如今微服务正逐步替代传统架构， 但服务的拆分使用
+却给部署带来诸多问题： 在分布式架构系统中， 所依赖的
+部件很多， 这些组件可能会引起一些冲突； 在部署时由于
+各个服务器的环境差异也会遇到各种问题。特别是涉及
+到互联网项目开发、 测试及生产环境的差异时， 会给微服
+务部署带来极大困难。
+可 利 用 容 器 化 技 术 解 决 这 些 问 题 ， 以Docker 为 例 ，
+Docker 允许将开发中的应用、 依赖、 函数库、 配置一起打
+包， 形成可移植镜像， 构成的镜像中包含完整的运行环境，
+运行时仅依赖于系统内核， 因此可在任意基于相同内核开
+发的系统上运行。同时， 在容器运行时利用沙箱机制形成
+隔离容器， 各个应用互不干扰， 且启动、 移除均可使用一行
+命令完成。通过容器化技术以提高部署效率、 节约运维资
+源， 为微服务集群的高效部署提供了有力支持。
+2.3 自动化运维
+自动化运维是指以云平台技术为基础， 并借助 DevO‐
+ps［38］（Development 和 Operations 的 组 合） 方 法 实 现 应 用 全
+生命周期的自动化管理 ［39］。随着时代发展， 云计算技术也
+在不断进步， 软件工程师们可利用各类调度工具， 依托其
+在自动化部署、 资源监控、 权限管理等方面的能力， 对De‐
+vOps 系统进行充分利用。
+以基于容器的 DevOps 云平台为例，DevOps 云平台的
+组成架构共分为 5 部分
+［40］， 分别是：①资源管理部分。利
+用 MooseFs、K8s 集群将资源整合到一起， 为资源的调用及
+存储提供特定支持；②项目管理部分。项目经理可根据具
+体业务需要创建、 更改项目， 以及对项目中的各类细节进
+行精细化管理；③在线开发部分。支持在线编辑和修改代
+码；④镜像管理部分。确保开发及运维人员的镜像使用需
+求；⑤应用管理部分。运维人员可使用此平台对应用进行
+测 试 、 发 布 、 升 级 、 删 除 等 操 作 。 系 统 组 成 架 构 如 图4
+所示［40］。
+在云计算技术的应用背景下， 自动化运维平台可以在
+最短时间内实现对多个服务器的部署。在具体应用中， 利
+用容器化技术， 在实现微服务应用统一部署的同时 ， 也能
+系统部署效率、 降低运维难度， 并提升资源的灵活配
+置能力。
+2.4 弹性伸缩
+基于 DevOps 系统的自动化运维可以对整个分布式集
+Kubectl、客户端等
+负载均衡器
+工作节点#1
+工作节点#1工作节点#1工作节点#1
+主节点#1
+API服务器
+Kubelet
+monit
+Podmaster
+etcd
+主节点#1
+API服务器
+Kubelet
+monit
+Podmaster
+etcd
+主节点#1
+API服务器
+Kubelet
+monit
+Podmaster
+etcd
+Fig. 3 Specific structure of hybrid deployment approach to build a
+highly available cluster
+图 3 采用混合部署方式构建高可用集群具体结构
+基于容器的DevOps云平台架构
+资源管理 项目管理 在线开发 镜像管理 应用管理
+Fig. 4 DevOps cloud platform architecture
+图 4 DevOps 云平台架构
+· ·88
+===== PAGE 5 =====
+第 7 期 曹 政， 王 楠， 李宝安， 等： 基于微服务容器化的分布式开源社区实现
+群进行精细化管理， 同时在此基础上实现单一或多个微服
+务组件的自动化、 智能化管理。
+再以 K8s 为例，K8s 可以通过手工执行 kubectl scale 命
+令实现 Pod 扩容， 但这与运维人员所希望达成的目标不一
+致。运维人员希望该集群能够实现自动化、 智能化的目
+标 ， 也 期 待Kubernetes 能 实 时 监 测Pod 的 运 行 状 况 ， 实 现
+Pod 数量的自动调整。
+水平自动扩展 （Horizontal Pod AutoScaling ，HPA） 是一
+种容器自动扩展技术， 其操作对象是 Replication Controller
+（ 决定一个Pod 有多少个同时运行的副本， RC） 、ReplicaSet
+（RS） 或Deployment 对应的 Pod， 其可以获取每个Pod 的利
+用率， 根据Pod 当前系统的负载自动进行水平扩容
+［41］。其
+实现原理是通过追踪分析 RC 控制的所有目标 Pod 的负载
+变化情况， 以确定是否需要针对性地调整目标 Pod 数量。
+若负载超过某个值则增加 Pod 数量， 低于该值则减少 Pod
+数量。有关 HPA 算法细节可见官方文档［42］。
+3 容器化开源工具
+业界对如何落地容器技术进行了大胆尝试， 并开源出
+一系列工具， 制定了统一的技术标准供各个企业及机构使
+用。本文介绍一些较为常用的容器化开源工具， 其会重点
+介绍 Kubernetes 的微服务架构。
+3.1 Docker 架构简介
+谈到容器技术时， 人们第一反应想到的大多是 Dock‐
+er。Docker 可以说是容器的代名词， 其完善了当时不温不
+火的 LXC（Linux Containers） ， 让用户以更加便捷的方式开
+发并部署应用， 可以说Docker 就是为容器而生的［43］。
+Docker 使用的是客户端—服务器架构 （ C/S 架构） ， 组
+成部分如下［44］：
+（1）The Docker daemon 。 用 于 监 听API 请 求 ， 并 管 理
+Docker 对象， 如镜像、 容器以及数据卷等， 同时其他进程可
+以通过进程通信机制来管理 Docker。
+（2）The Docker client 。用户可以通过命令行与 Docker
+服务进行交互， 其使用Docker API ，Docker 客户端也可以与
+其他守护进程进行通信。
+（3）The Docker registries 。 用 于 存 储 Docker 镜 像 ，
+Docker Hub 作为公共镜像库， 任何人都可以使用其中的镜
+像。若有需求也可以建立自己的私人镜像库。
+（4）The Docker objects 。当使用 Docker 时会涉及到创
+建并使用镜像、 容器等对象， 这里介绍两个较为常用的对
+象：①Images（镜像） ： 镜像将所需的各种环境依赖及系统
+配置打包在一个只读的模版中， 需要时可以使用。除官方
+镜像库提供的镜像外， 也可以使用 Dockerfile 构建自己的
+镜像；②Containers（ 容器 ） ： 容器是镜像的可运行实例， 用户
+可使用 Docker API 或 CLI 对容器进行各种操作， 且其对外
+隔离性较好。
+3.2 Kubernetes
+3.2.1 Kubernetes 简介
+Kubernetes 是为容器服务而生的一个可移植容器的编
+排管理工具［45］。Kubernetes 的本质就是一组服务器集群，
+其可以在集群的每个节点上运行特定程序， 从而对节点的
+容 器 进 行 管 理 。 目 的 是 实 现 资 源 管 理 的 自 动 化 、 智 能
+［46］。下面介绍 Kubernetes 的核心组件及常用资源对象。
+Kubernetes 集群组件如图 5 所示。
+Kubernetes 集群核心组件包括［47］：
+（1） 控制平台组件。控制平台组件 （Control Plane Com‐
+ponents） 对容器集群运行作出全局决策。其可以在任何地
+方 运 行 ， 具 体 组 件 包 括 ：kube-apiserver（服 务 接 口） 、etcd
+（后台数据库） 、kube-scheduler（资源分配） 、kube-control‐
+ler-manager［47］（ 平台控制组件 ） 与cloud-controller-manager
+（ 云平台控制组件 ） 等。
+Fig. 5 Kubernetes cluster components
+图 5 Kubernetes 集群组件
+· ·89
+===== PAGE 6 =====
+2023 年软 件 导 刊
+（2）Node 组件。①kubelet ： 用于维护并管理容器状态；
+②kube-proxy ： 用于监控容器流量及状态。
+Kubernetes 常用资源对象如下：
+Pod：Kubernetes 中的基础操作单元， 每个 Pod 里可以
+运行一个或多个容器。
+Service：Pod 对外服务的统一入口， 在提供对外服务的
+同时， 也负责Service 内部的负载均衡［48］。
+ReplicaSet（RC） ：ReplicaSet 是 RC 的升级版， 两者均会
+确保在容器生命周期内有一定数量的 Pod 运行。若某个
+Pod 不响应，RS 则会将其替换以保持总数不变 ［49］。
+Deployment ： 能随时监控Pod 的部署进度， 以解决Pod
+的编排问题［50］。
+Namespace ： 命名空间， 是对资源和对象的抽象集合，
+可以将系统内的不同对象根据具体需要进行分配， 并将这
+些对象分配到不同的项目组或用户组中。以上 4 个常见
+资源对象均属于某个 Namespace［51］。
+3.2.2 Kubernetes 微服务架构
+Kubernetes 提供了当前容器技术体系内最好的微服务
+架构解决方案， 具体特点如下［52］：
+（1） 服务间通信机制。Kubernetes 架构中有一种用于
+内部通信的设计， 名为Cluster IP ， 单一微服务应用通过对
+外暴露接口的方式提供服务 （IP+端口） ， 只需知道该服务
+的地址即可进行通信。 Kubernetes 通过给每个微服务分配
+固定的 IP 地址 （Cluster IP） ， 同时引入DNS 机制， 将每个微
+服务的名称作为域名与该 IP 捆绑， 客户端只需用服务名称
+代替 IP 地址即可对该服务进行调用。
+（2） 自动化。通常在一个大型微服务架构项目中有非
+常多的微服务应用， 在某个应用中， 人工部署、 监控及扩容
+一个微服务节点是很困难的， 可通过 Kubernetes 的 RC/De‐
+ployment 对象结合容器高可用、 弹性扩容等特性实现微服
+务的自动化。
+（3） 持久化存储。 Kubernetes 通过独有的动态卷配置
+（Dynamic Provision） 实现数据卷的自动创建、 部署、 回收等
+策略， 而开发人员只需用PVC（Persistent Volumes Claim ） 描
+述自己对持久化存储的需求， 并将创建好的PVC 挂载到需
+要使用持久化存储的 Pod 上即可， 平台会根据PVC 描述的
+条件自动分配合适的 PV 挂载到容器中。整个过程无需开
+发人员关注， 一切由平台自动分配
+［52］。
+3.2.3 容器运行时
+容器运行时 （Container Runtime） 指容器运行环境， 是
+负责运行容器的软件［47］。Docker 就是一种容器运行时， 但
+Docker 在问世之初并未考虑容器编排问题。直到 2014 年
+Google 推出 Kubernetes 以解决 Docker 容器编排问题， 并在
+随后的时间里逐渐成为业界主流的容器编排工具。
+2020 年，Kubernetes 宣布在 1.20 版本废弃 Docker 作为
+容器运行时 ［53］， 很多人认为Docker 要被淘汰了。其实不
+必惊慌，Kubernetes 只是弃用 Docker 这个底层进行时， 转而
+扶 持Kubernetes 自 己 创 建 的 容 器 运 行 接 口CRI（Container
+Runtime Interface） 的 运 行 时 。 该 接 口 使 得kubelet 使 用 支
+持 OCI 规 范 的 容 器 运 行 时 ， 而 无 需 重 新 编 译 ， 这 意 味 着
+Docker 构建的镜像仍能正常运行在 Kubernetes 集群的运行
+时中［54］。
+Kubernetes 之所以放弃 Docker， 而不是将其集成到框
+架中， 原因如下： 首先，Docker 不是一种单独的技术， 而是
+一 个 完 整 的 技 术 栈 （containerd 只 是 Docker 中 的 一 个 组
+件） ； 其 次 ，Docker 并 不 支 持cri，Kubernetes 为 兼 容Docker
+不 得 不 引 入Dockershim 来 访 问Docker 内 部 的containerd ，
+并造成许多不必要的系统性能损耗 ［54］。所以 Kubelet 跳过
+Docker 直接调用 containerd ， 在保证架构稳定的同时， 又能
+提升集群性能。因此， Kubernetes 1.20 弃用 Docker 作为容
+器进行时。
+3.2.4 K3s 简介
+K3s 是一个轻量级的 Kubernetes 发行版， 其针对边缘
+计算、 物联网等业务场景进行了优化［55］。K3s 保留了 K8s
+的集群管理、 自动化运维、 集群高效部署、 弹性伸缩等特
+性。由于 K8s 背靠 Google， 且有众多成功案例， 而K3s 来源
+于 K8s， 因此也可基于K3s 构件容器云
+［16］。K3s 的具体内
+容可见官方文档［55］。
+3.3 Service Mesh
+Service Mesh（ 服务网格 ） 是一个基础设施层， 用于处理
+服务间通信。其将用户、 控制平面和数据平面彻底分离，
+并为控制平面增加了诸多管控和诊断能力 ［56］。其解决了
+传统微服务中如与特定语言绑定、 入门门槛较高、 业务逻
+辑与框架解耦程度不足等 ［57］问题。它将微服务中的通用
+功能如负载均衡、 弹性伸缩、 流量监控等功能拆解成单独
+的进程， 此过程称为Sidecar 模式。该模式允许用户向应用
+无侵入地添加多种功能， 避免了为满足第三方组件需求而
+向应用添加额外的配置代码
+［58］。简单来说， 作为服务间通
+信的基础设施层， 业务团队只需关注与 Sidecar 的交互， 而
+无需关注 Sidecar 与外部的交互， 比如与各种中间件或不同
+语言的通信等［59］。
+3.4 Istio
+Istio 是由 IBM、Lyft 和 Google 共同开发的基于服务网
+格的开源框架， 其可以透明地分层到分布式应用程序上，
+并具备安全性和可观察性等优点
+［60］。其通过提供一种简
+单方式为已部署的服务建立网络， 该网络具有负载均衡、
+服务认证、 流量监控等功能， 只需要很少的更改或不需要
+更改服务代码
+［61］。
+Istio 首先是一个服务网格， 但不仅仅是服务网格， 而
+是在 Link-erd、Envory 这样典型的服务网格之上， 提供一个
+完整的解决方案， 满足了微服务的多样化需求 ［62］。一方
+面，Service Mesh 在很长一段时间内没有流行起来是因为
+运维难度过高， 同时高度抽象化的架构以及极高的部署难
+度让很多企业望而却步 ［63］。借助 Kubernetes 提供的基础
+· ·90
+===== PAGE 7 =====
+第 7 期 曹 政， 王 楠， 李宝安， 等： 基于微服务容器化的分布式开源社区实现
+设置， 在很大程度上解决了运维问题。另一方面， 其可为
+Kubernetes 集群提供应用间通信的解决方案， 因为 Kuber‐
+netes 的定位是对容器集群进行自动化、 智能化运维及部
+署 ， 其 中 负 责 通 信 的Kube Proxy 只 具 备 最 基 础 的 通 信 功
+能， 对于微服务中精细粒度的集群管理、 负载均衡、 服务发
+现等功能， 需要借助其他技术或架构来提供［63］。
+4 微服务实际应用
+4.1 互联网应用： 电商平台
+如今人们在现实生活中经常看到的 “视频带货” “直播
+带货” ， 是随着前些年电商经济的发展而来的。随着用户
+量激增， 各类需求增多， 传统单体垂直架构已无法满足电
+商平台的现有需求
+［64］， 此时需要使用微服务架构来满足海
+量的高并发需求。
+电商平台作为一种大型集群平台， 更注重于业务流的
+稳定， 对整个业务集群的弹性伸缩、 可用性等方面要求很
+高， 若集群某个业务节点在短时的高并发需求中停机， 整
+个系统业务流程将无法运行。对于此类项目的微服务拆
+分、 容器化部署及运维重点， 应从快速部署转到业务节点
+之间的解耦合、 业务流程的合理性 （ 利用MQ 来异步处理业
+务信息 ） 及维持主节点与业务节点集群的高可用上。
+平台大体架构分为 3 层： 首先是微服务组件层， 使用
+服务网关以实现网站的服务访问及部分负载均衡功能， 通
+过注册中心使各个服务节点只需通过服务名称， 而无需具
+体 IP 地址即可使用集群内服务； 其次是业务逻辑层， 通过
+将各个具体业务拆解， 以实现单个节点的弹性伸缩和集群
+的分布式管理， 同时使用消息队列异步访问应用， 以减轻
+集群压力； 最后是数据访问层， 除搭建关系型数据库集群
+外， 利用Redis 缓存大部分数据， 一定程度上解决了数据访
+问的压力问题。
+4.2 业务大数据应用： 科技资源共享
+在每个企业及机构中， 一个业务系统往往由不同团队
+进行开发， 随着时间推移， 在一次次更新后， 各个业务团队
+所开发的业务模块和系统间的架构不尽相同， 而且涉及到
+的数据等信息无法有效进行融合、 交换和分析， 微服务技
+术的出现很好地解决了此问题
+［65］。
+在资源共享及注册方面， 各个开发团队只需将开发的
+服务统一上传到 git 存储， 并将信息注册到服务中心， 即可
+通过 Feign 来调用服务。而验证信息、 负载均衡方面则交
+给 Zuul 网关来负责， 同时将已验证的信息放入 Redis 以减
+少数据库负担。在系统部署发布方面， 利用 Jenkins 构建
+Maven 项目， 只需指定好服务所在的git 地址，Maven 即可自
+动将存储好的代码构建成项目， 并结合 Dockerfile 生成一
+个微服务容器化镜像并运行。
+4.3 基于微服务+容器技术的节能管理原型系统
+随着云计算新技术的发展 （如 Serverless［66］等） ， 更多
+机构选择将大部分本地数据及服务转移至云数据中心， 但
+也使得数据中心的能耗增加， 导致其成为当地碳排放增长
+最快的因素之一。 Xu 等［67］提出节能管理原型系统， 以评
+估其提出的多层透视模型效果。该系统物理资源由 Open‐
+Stack 管理， 而服务由Docker 管理， 该方案还通过Docker 将
+单一应用打包进容器。而一台虚拟机可以有多个容器， 利
+用容器编排工具 （该系统使用 Docker Swarm） 将这些容器
+组合起来， 即可在单机中形成一个较为完整的微服务框
+架。因此， 该系统可通过一系列方法评估各地数据中心的
+能耗， 通过对数据中心的虚拟机进行整合及虚拟机数量缩
+放实现节能减排的效果。
+4.4 小结
+以上方案致力于解决传统架构的问题， 特别是 SOA 架
+构对于架构整体的严格限制。不同于 SOA 作为一个整体
+应用部署， 且依靠ESB 来协调内部应用， 微服务更加强调
+业务系统的组件化与服务化， 每个组件均能对外单独提供
+服务， 且单个应用与容器结合紧密。因此， 在互联网应用
+场景中， 微服务+容器技术显然更适应技术发展的趋势与
+时代潮流。
+5 微服务容器化应用搭建
+5.1 应用总体设计
+以 SSM 架构开源社区为例 ， 原有结构为单体垂直架
+构 。 项 目 分 为 前 台 文 章 浏 览 与 后 台 用 户/文 章 管 理 两 部
+分。根据 DDD 服务拆分思想， 将文章浏览单独拆解成一
+个服务组件， 既可以给前台用于用户浏览， 也可给后台管
+理文章。而用户管理模块则拆解为另一服务组件， 剩余字
+段均通过 Rest API 连接。部署方面， 从Docker 转为 Kuber‐
+netes 集群化管理， 并将dashboard 作为一个新的服务组件
+加入其中。改造后的架构如图 6 所示。
+物理资源层主要是部署硬件及应用环境， 在物理主机
+中创建 3 个虚拟机， 用于搭建Kubernetes 集群 （ 一主两从 ） 。
+主节点即控制节点， 负责调度集群资源 ， 而从节点作为工
+点用于运行容器，3 台虚拟机使用 kubeadm 进行快速
+部 署 。 若 本 地 物 理 机 性 能 无 法 满 足 需 求 ， 也 可 以 选 择
+Google 提供的 Kubernetes 云集群。
+服务平台层用于运行容器化应用的核心工具， 除选择
+Kubernetes 作为集群管理工具外， 也使用 DockerHub 作为
+服务应用
+物理资源
+服务平台
+文章浏览 用户管理 Dashboard
+Kubernetes DockerHub
+容器运行时：Docker
+物理主机（内含3个虚拟机）
+Tomcat
+物理资源
+部署平台
+Docker
+物理主机
+开源社区平台系统 *1
+单体垂直架构（改造前） 微服务容器化改造后
+Fig. 6 Simple open source community system architecture
+图 6 简单开源社区系统架构
+· ·91
+===== PAGE 8 =====
+2023 年软 件 导 刊
+容器镜像库， 容器运行时选择Docker。
+最后是服务应用层， 根据使用需求， 将前台文章浏览
+模块与用户管理模块进行拆分， 以便于后期维护， 同时新
+加入 Kubernetes 官方提供的 Dashboard 进行可视化部署与
+5.2 功能设计与技术分析
+通过对该项目进行微服务容器化改造， 使该项目获得
+了包括但不限于以下优势：
+（1） 项目组件拆分后方便扩容， 在原本的单体垂直架
+构下扩容， 需要再启动一台虚拟机部署项目， 而组件拆分
+后只需对某个应用进行扩容， 节省了很多系统资源。
+（2） 运维方便， 原来的项目若出现问题只能手动重启，
+而有了 Kubernetes ， 一是可以通过dashboard 可视化监控集
+群信息； 二是某个节点失效时， 集群能够迅速启动一个新
+节点以提供服务。
+5.2.1 外部访问 & 服务类型
+在服务应用层， 部分模块端口需对外暴露以提供基础
+服务， 而用户管理、Dashboard 模块端口对内使用， Kuber‐
+netes 提供了一些 Service 类型以供选择［68］：
+（1）Cluster IP 。为集群内部应用提供一个虚拟 IP， 设
+定此类型后， 该应用只能在集群内部访问。
+（2）NodePort。该服务节点暴露特定静态端口， Node‐
+Port 将该节点的 Cluster IP 映射到暴露在外的端口上， 只需
+输入本地机 IP 地址与对应服务的端口即可访问服务。
+（3）LoadBalancer 。可以使用云服务商提供的负载均
+衡服务器对外提供服务， 服务请求将会自动转发至 Node‐
+Port 与 Cluster IP 上， 但其缺点在于每个对外服务都需要一
+个 IP 地址和负载均衡服务器， 比较浪费。
+（4）Ingress。Ingress 在严格意义上不属于一种 Service
+服务， 其更像是一种智能路由或集群入口， 提供了负载均
+衡、SSL 和虚拟托管等多种功能。 Ingress 也可基于子路径
+或路由流量访问其他服务， 相对于 LoadBalancer 节省了很
+多资源， 部署方式可参考官方文档［69］。Ingress 流量转发情
+况如图 7 所示。
+因该架构只用于测试环境， 所以选择 NodePort 对外提
+供服务。只需在已创建好的 RC/Deployment 基础上再创建
+Service 提供服务即可， 示例如下：
+apiVersion ： v1
+kind： Service
+metadata：
+name： svc-forward2
+spec：
+ports：
+- port： 8080
+protocol： TCP
+targetPort： 8080
+selector：
+run： testforword
+type：NodePort
+5.2.2 可视化部署与监控
+Dashboard 是 Kubernetes 官方提供的用于可视化部署
+与监控的 Web UI 界面［70］，Kubernetes 初次安装时并不会同
+步部署 Dashboard ， 因此需自行安装。而对于一些有特殊
+需求的业务应用， 可利用官方文档提供的 Client Libraries
+搭建专属的容器云平台［71］。
+（1）Dashboard 提 供 的 部 署 应 用 的 方 式 有3 种 ： 输 入
+yaml/json 创建、 从配置文件创建及使用表单创建。表单创
+建只需输入应用名称、 容器镜像、Pod 数量 （RC） ， 设定Ser‐
+vice 网络模式 （内网、 外网或暂不设置Service） ， 即可快速
+部署应用。该方式适用于测试应用是否在集群内可用， 而
+对于一些较为复杂的应用框架， 建议选择前两种方式进行
+（2） 对于Dashboard 可视化运维， 除部署功能外，Dash‐
+board 最重要的功能就是可视化 Kubernetes 集群资源信息
+及所有报错信息。在 Dashboard 的 Pod 列表与详细信息页
+面中也可直接查看同一个 Pod 中不同容器的日志。
+5.2.3 自动化运维
+要确保集群的高可用 ， 需要在部署应用时通过指定
+RC 数 量 ， 让 多 个Pod 实 例 同 时 运 行 ， 并 使 用 容 器 探 针 对
+Pod 定 期 进 行 检 测 。 若 某 个Pod 失 效 ， 则RC 会 创 建 新 的
+Pod 代替旧的 Pod（失效的 Pod） 。而后期也可根据实际需
+求， 手动添加/减少 Pod 数量。示例如下：
+apiVersion ： apps/v1
+kind： Depolyment
+metadata：
+name： testforward
+replicas： 3
+selectorL
+matchLabels ：
+runs： testforward
+弹 性 伸 缩 （Horizontal Pod Autoscaler ，HPA） 是 指 通 过
+CPU 使用率或其他应用提供的指标自动执行扩容或缩减。
+HPA 实现集群弹性伸缩的方式与 RC 大致相同， 但具体做
+法与原理上有所区别：RC 是直接在原有 RC/Deployment 上
+cluster
+Ingress,
+178.91.123.132
+Ingress,
+178.91.123.132
+Ingress,
+178.91.123.132
+/foo
+/bar
+Ingress 管理的
+负载均衡器
+Fig. 7 Ingress traffic forwarding status
+图 7 Ingress 流量转发情况
+· ·92
+===== PAGE 9 =====
+第 7 期 曹 政， 王 楠， 李宝安， 等： 基于微服务容器化的分布式开源社区实现
+手动增减 Pod 数量， 而HPA 是根据系统资源使用情况自动
+创建一个新的 RC/Deployment ， 并将原有RC/Deployment 上
+的内容逐渐迁移到新的 RC/Deployment 中， 从而通过该机
+制完成容器集群的弹性伸缩 ［42］。
+表 2 中展示了自动化运维改造前与改造后架构的一
+组实际测试结果， 该测试以人们日常访问请求为背景， 通
+过该结果可以看出微服务容器化在自动化运维与弹性伸
+缩方面优于传统架构。
+5.2.4 小结
+利用 DDD 思想、 容器开源工具与关键技术等将传统架
+构拆分为微服务架构并利用容器编排工具部署后， 可根据
+不同的需求设计并开发应用， 实现后台监控、 松耦合等功
+能， 相较于传统开源社区项目更简单、 易用、 便于维护， 且
+方便扩容与进行分布式管理。表 3 详细对比了改造前与
+改造后架构的特点及功能。
+6 微服务容器化在边缘计算系统中的应用
+随着近几年的发展， 移动端设备数量不断增多、 性能
+不断增强， 且随着5G 等现代通信技术的发展， 人们逐渐意
+识到可以用云端来处理一些移动端无法处理的任务， 如数
+值处理、 规则制定等， 于是便有了 “工业互联网” “车联网”
+等新兴概念。本节将阐述微服务容器化如何在边缘计算
+［72］落地应用， 并通过移动边缘计算、 车联网等应用场
+景观察微服务容器化在边缘计算领域的发展前景。
+6.1 边缘计算
+边缘计算 （Edge Computing） 是一种分布式运算架构，
+其将应用程序、 数据资料与服务的运算由网络中心节点移
+往网络逻辑上的边缘节点进行处理 ［73-74］。相对于云计算，
+边 缘 计 算 对 移 动 计 算 与 物 联 网 更 加 友 好 ， 其 具 有 以 下
+优势［75］：
+（1） 缓解网络带宽与数据中心压力。将大部分不需要
+长期存储的数据放在网络边缘节点进行处理， 从而极大地
+减轻了数据中心的压力。
+（2） 增强服务的响应能力。利用边缘计算特性在用户
+附近提供服务， 从而减少网络波动， 提高响应能力。
+（3） 保护隐私数据。将私密数据限制在设备防火墙
+中， 提升数据的安全性。
+得益于这些优势， 边缘计算近些年来受到各个企业及
+组织的关注， 得到了长足发展。但边缘计算模型与云计算
+模型并不是互相取代的关系， 而是相辅相成的关系。边缘
+计算需要数据中心强大的计算能力和海量存储的支持， 而
+数据中心也需要边缘计算中边缘设备对海量数据及隐私
+数据的处理
+［76］。但边缘节点的性能往往不是很理想， 针对
+边缘节点性能较差的特点， 也可利用微服务架构为边缘核
+心节点提供一些服务。例如可充分利用开源边缘计算微
+服 务 框 架EdgeX Foundry ， 其 广 泛 应 用 于 服 务 器 网 关 、 路
+由、 边缘节点上。在此基础上，Lee 等
+［77］在 2022 年提出可
+在 Kubernetes 集群上运行 EdgeX Foundry ， 在保证服务间通
+信的基础上， 进一步实现平台的智能化、 自动化运维［78］。
+6.2 边缘计算在行业中的应用
+移动边缘计算 （Moblie Edge Computing ， MEC） 通过字
+面意思可知， 这项技术是用于移动通信系统下， 在离用户
+很近的地方部署边缘计算节点， 并在节点上处理大量计算
+传统的移动通信系统联网是将信号传送给附近基站，
+基站将信号转换为数字信号后， 再一层层传到核心网， 最
+后从核心网一层层传导到移动设备中。在网速还比较低、
+对网络性能要求不高的时代， 这种层层转发的模式还是可
+以接受的。但随着 5G 时代的到来， 对网络高带宽、 低时
+延、 大容量方面的要求逐渐提高， 而解决问题的方式无非
+两种： 增强网络性能或加强边缘节点计算能力
+［79］。但网络
+在一些极端情况下不是很可靠， 容易受到干扰， 在某些应
+用场景如无人驾驶时遇到网络问题可能会出现严重事故。
+所以人们选择了第二种方法， 主动推进未来移动网络逐渐
+向 SDN/NFV、ICT 融合等技术框架方向演进。 MEC 技术在
+此 背 景 下 应 运 而 生 ， 实 现 了 网 络 与 业 务 的 深 度 融 合［80］。
+MEC 服务器部署方式如图 8 所示。
+最常见的 MEC 部署就是在基站附近建造具有一定计
+算性能的服务器， 用于就近处理基站内大量需要处理的紧
+急任务。还是以无人驾驶为例， 车载车机系统会自动处理
+车载传感器所收集的数据， 并根据规则对驾驶情况作出调
+Table 2 Performance comparison before and after renovation
+表 2 改造前与改造后性能对比 （ms）
+测试项目
+请求响应时间
+平均容器重启时间
+容器意外终止重启时间
+自动扩容所需时间
+改造前架构
+（ 使用Docker 部署 ）
+8 154
+重启失败， 需手动重启
+需手动扩容
+改造后架构
+（ 使用Kubernetes 部署 ）
+7 591
+23 569
+16 368
+Table 3 Comparison of architecture before and after renovation
+表 3 改造前与改造后架构对比
+特点 & 功能
+可视化监控
+应用组成
+安全管理
+应用运维
+弹性扩容
+对外提供服务
+改造前架构
+（ 使用Docker 部署 ）
+mac/windows 可使用 Docker
+Desktop，Linux 需使用第三
+方插件实现可视化
+所有应用集中在一个容器
+外部用户均可通过端口直
+接访问容器
+手动运维
+暴露端口
+改造后架构
+（ 使用Kubernetes 部署 ）
+官方 Dashboard 实现可视化
+每个应用拥有独立的容器， 可
+独立部署
+外 部 应 用 无 法 访 问Pod 内 容
+器， 只能通过Service 暴露的端
+口访问服务
+RC 自动化运维
+HPA 弹性扩容
+Cluster IP / NodePort / LoadBal‐
+ance / Ingress
+· ·93
+===== PAGE 10 =====
+2023 年软 件 导 刊
+整， 而基站及远程服务器只负责更新车辆驾驶规则， 以及
+特殊情况下的远程驾驶等工作 ［81］。
+上文也提到基于微服务框架让中心云为边缘节点提
+供服务的方式， 但想落地实现该方式是有前提的： 保证中
+心云与边缘节点间的网络基础设施满足高带宽、 低时延等
+要求， 否则中心云提供的服务质量会十分堪忧。此时出现
+了 5G 网络， 其基于服务的网络架构， 能够让5G 以开放接
+口的方式为边缘端设备提供网络基础设施支持
+［82］。有了
+5G 网络带来的大数据带宽、 低时延、 高可靠等优势， 充分
+利用 MEC 架构为产业提供一个基于网络的边缘计算基础
+设施， 其能根据客户需求提供多种设备的网络接入、 数据
+分析、 智能处理、 云终端协管等相互协同的产业一体化基
+［83］。
+6.3 小结
+选取几个互联网及行业大数据平台的典型应用进行
+分析， 具体场景及其架构特点如表4 所示。
+通过对上述场景的分析， 在不同行业的应用场景下，
+需要的微服务特性也不尽相同。从 EdgeX 等专为边缘计
+算场景适配的微服务框架， 再到K3s 等专为边缘计算等业
+务场景适配的轻量级容器编排工具， 最后依托于 5G 网络
+强大的通信能力， 逐步实现了工业互联网、 车联网等MEC
+场景的落地， 证明了微服务容器化会成为未来发展的一大
+7 结语
+本文论述了微服务和容器化相关技术方案及其特点
+与逻辑关系， 将单体架构应用进行微服务容器化改造， 并
+系统介绍了现有开源工具及其发展路线和未来趋势。详
+细介绍了开发运维过程中的四大关键技术， 并结合开源社
+区微服务项目讨论开发运维细节。通过研究微服务容器
+化在典型应用中的使用场景， 以便更好地将微服务容器化
+延伸到现实应用中。随后自行搭建了轻量级开源社区应
+用， 通过实际拆解原始架构、 设计组件及部署容器化应用，
+深刻体会到微服务容器化不仅在理论层面上具有研究价
+值， 而且在应用层面上具有很强的应用价值。但其中仍有
+一些潜在问题与挑战需作进一步讨论：
+（1） 容器化集群虽然解决了微服务架构的部署问题，
+但容器集群管理工具的部署本身也带来了很多问题。例
+如，Kubernetes 部署复杂且对系统性能有一定要求， 而官方
+提供的 minikube 最低也需要 2GB 内存以运行该工具。即
+便利用 K3s 代替 Kubernetes 部署也存在诸如大型系统稳定
+性等问题， 也需作进一步研究。
+（2） 在服务迁移方面， 针对不同的应用场景、 系统架构
+特点， 对部署的方式、 规模、 数据迁移及后期维护等方面提
+出了很大挑战。例如， 部署容器时是拉取公共镜像库还是
+自行构建应用镜像， 持久化存储以何种方式迁移并应用，
+以及平台所需的物理机数量与性能等均需加以考虑。
+（3） 相对于传统单体架构易被入侵， 由于服务网关的
+存在， 微服务架构在数据安全方面有着巨大优势。而容器
+编排工具在此基础上更进一步， 如 Kubernetes 将每个微服
+务的容器封装到 Pod 中， 外界只能通过Service 对外暴露的
+接口访问 Pod， 不能直接访问Pod 内的容器， 而Pod 内的容
+器可互相访问， 可通过将相近服务部署在同一 Pod 的方式
+保证单一应用及容器集群的安全性。
+（4） 在平台标准制定与行业合作方面有待加强， 虽然
+企 业 在 搭 建 平 台 时 参 考 了 如SpringCloud 、Istio 等 开 源 框
+架， 但接口及部署方式均由各个企业自行定义， 影响了框
+架迁移及数据的共享效率与可行性。在对各个企业的需
+求进行定制化设计的同时， 如何规定统一的 API 接口等都
+是需要后期持续关注并研究的问题。
+参考文献：
+［1］ CHEN L. Continuous delivery huge benefits ， but challenges too ［J］.
+IEEE Software ， 2015， 32（2） ： 49-53.
+［2］ JAMSHIDI P ， PAHL C ， MENDONCA N C ， et al. Microservices the jour‐
+ney so far and challenges ahead ［J］. IEEE Software ， 2018 ， 35 （3） ：
+24-35.
+［3］ GAMMA E ， HELM R ， JOHNSON R ， et al. Elements of reusable object-
+oriented software ［M］. Boston：Addison-Wesley ， 1995.
+［4］ MA Q ， ZHOU N ， ZHU Y ， et al. Evaluating service identification with de‐
+sign metrics on business process decomposition ［C］//Bangalore ：Proceed‐
+ings of the IEEE International Conference on Services Computing ， 2009.
+［5］ ZHONG C X ， LI S S ， ZHANG H ， e t al. Evaluating granularity of mi‐
+croservices-oriented system based on bounded context ［J］. Journal of Soft‐
+ware，2019， 30（10） ：3227-3241.
+钟陈星， 李杉杉， 张贺， 等 . 限界上下文视角下的微服务粒度评估
+Internet
+汇聚节点
+SERVER
+SERVER
+eNodeB eNodeB
+eNodeB
+MME S-GW P-GW
+UE UE UE
+Fig. 8 MEC server deployment methods
+图 8 MEC 服务器部署方式
+Table 4 Industry case analysis summary
+表 4 行业案例分析总结
+业务场景
+科技共享平台
+边缘计算
+架构特点及所需关键技术
+能应付长时间高并发 （ 直播 ） 、 节点可用性高、 对自动化运维要
+节点可弹性伸缩 &可用性高、 能应付短时间高并发 （ 抢购 ）
+要求系统稳定、 安全、 可用性高
+整体突出微服务架构调度、 存储与部署应用的便利性
+要求云与云、 服务间通信能力强， 是未来工业化发展的方向
+· ·94
+===== PAGE 11 =====
+第 7 期 曹 政， 王 楠， 李宝安， 等： 基于微服务容器化的分布式开源社区实现
+［J］. 软件学报， 2019， 30（10） ：3227-3241.
+［6］ EVANS E. Domain-driven design ： tackling complexity in the heart of soft‐
+ware ［M］. Boston：Addison-Wesley ， 2004.
+［7］ CSDN. Introduction to DDD ［EB/OL］. https ：//blog. csdn. net/ra‐
+ichen_wang/article/details/102889249.
+CSDN. DDD 简介 ［EB/OL］. https ：//blog. csdn. net/raichen_wang/article/
+details/102889249.
+［8］ STEINEGGER R H ， GIESSLER P ， HIPPCHEN B ， et al. Overview of a
+domain-driven design approach to build microservice-based applications
+［C］// Venice ：Proceedings of the 3rd International Conference on Advanc‐
+es and Trends in Software Engineering ， 2017.
+［9］ PENG C Y. The way of complex software design ： comprehensive analysis
+and practice of domain-driven design ［M］. Beijing ： China Machine
+Press， 2020.
+彭晨阳 . 复杂软件设计之道： 领域驱动设计全面解析与实战 ［M］. 北
+京： 机械工业出版社， 2020.
+［10］ TAN F. Spring Cloud Alibaba microservice principle and practice ［M］.
+Beijing：Publishing House of Electronics Industry ， 2020.
+谭锋 . Spring Cloud Alibaba 微服务原理与实战 ［M］. 北京： 电子工业
+出版社， 2020.
+［11］ MENDONCA N C ， JAMSHIDI P ， GARLAN D ， et al. Developing self-
+adaptive microservice systems ： challenges and directions ［J］. IEEE Soft‐
+ware， 2021， 38（2） ： 70-79.
+［12］ CHEN L. Microservices ： architecting for continuous delivery and DevOps
+［C］//Seattle：Proceedings of the 15th IEEE International Conference on
+Software Architecture ， 2018.
+［13］ APACHE. Introduction to Apache Dubbo ［EB/OL］. https ：//dubbo.
+apache. org/zh/docs/introduction/.
+APACHE. Apache Dubbo 简 介 ［EB/OL］. https ：//dubbo. apache. org/
+zh/docs/introduction/.
+［14］ PAUTASSO C ， ZIMMERMANN O ， AMUNDSEN M ， et al. Microser‐
+vices in practice ， part 2 service integration and sustainability ［J］. IEEE
+Software， 2017， 34（2） ： 97-104.
+［15］ PARDON G ， PAUTASSO C ， ZIMMERMANN O. Consistent disaster re‐
+covery for microservices ： the BAC theorem ［J］. IEEE Cloud Comput‐
+ing， 2018， 5（1） ： 49-59.
+［16］ LIU Z. Design and practice of cloud native application container platform
+based on K3s ［J］. Modern Information Technology ， 2021 ，5（12）：
+22-25.
+刘忠 . 基于 K3s 构建面向云原生应用的容器平台设计与实践 ［J］. 现
+代信息科技， 2021，5（12） ：22-25.
+［17］ LUKSA M. Kubernetes in action ［M］. Greenwich ： Manning Publica‐
+tions， 2017.
+［18］ REDHAT. What ’s a Linux container ［EB/OL］. https ：//www. redhat.
+com/en/topics/containers/whats-a-linux-container.
+［19］ MENAGE P B. Adding generic process containers to the Linux kernel
+［C］//Proceedings of the Proceedings of the Linux Symposium ， 2007 ：
+45-58.
+［20］ FELTER W ， FERREIRA A ， RAJAMONY R ， et al. An updated perfor‐
+mance comparison of virtual machines and Linux containers ［C］//Proceed‐
+ings of the 2015 IEEE International Symposium on Performance Analysis
+of Systems and Software ， 2014：1-14.
+［21］ KOUTOUPIS P. Everything you need to know about Linux containers ，
+part II ： working with Linux containers （LXC） ［EB/OL］. https ：//www.
+linuxjournal. com/content/everything-you-need-know-about-linux-con‐
+tainers-part-ii-working-linux-containers-lxc.
+［22］ CSDN. Introduction to Linux Containers ［EB/OL］. https ：//blog. csdn.
+net/M2l0ZgSsVc7r69eFdTj/article/details/95041412.
+CSDN. Linux Container 简 介 ［EB/OL］. https ：//blog. csdn. net/
+M2l0ZgSsVc7r69eFdTj/article/details/95041412.
+［23］ JANAKIRAM M K S. The state of the Kubernetes ecosystem ［EB/OL］.
+https：//assets-global. website-files. com/6222ca42ea87e1bd1aa1d10c/
+6297fd7503b3e52b17d7710d_State% 20of% 20Kubernetes% 20Ecosys‐
+tem. pdf.
+［24］ ZHONG Z ， XU M ， RODRIGUEZ M A ， et al. Machine learning-based
+orchestration of containers ： a taxonomy and future directions ［J］. ACM
+Computing Surveys ，2022，54：1-35.
+［25］ REDHAT. What is container orchestration ？ ［EB/OL］. https ：//www.
+redhat. com/en/topics/containers/what-is-container-orchestration.
+［26］ CUI H T ， ZHANG C ， DING X ， et al. Evaluation framework for develop‐
+ment organizations ’ adaptability to micro-services architecture ［J］. Jour‐
+nal of Software ， 2021， 32（5） ：1256-1283.
+崔海涛， 章程， 丁翔， 等 . 面向微服务架构的开发组织适应性评估框
+架 ［J］. 软件学报， 2021，32（5） ：1256-1283.
+［27］ FU L L. Research on the deployment of microservices based on Spring
+Cloud by docker ［D］. Wuhan：FiberHome Technologies Group ， 2019.
+付琳琳 . 基于 Spring Cloud 的微服务容器化部署方案的研究 ［D］. 武
+汉： 武汉邮电科学研究院， 201
+［28］ FU L L ， ZOU S W. Research on container deployment of microservices
+［J］. Computing Technology and Automation ， 2019， 38（4） ：151-155.
+付琳琳， 邹素雯 . 微服务容器化部署的研究 ［J］. 计算技术与自动
+化， 2019， 38（4） ：151-155.
+［29］ HUANG W. Research on fault tolerant middleware technology of cluster
+system ［D］. Beijing ：Institute of Computing Technology ， Chinese Acade‐
+my of Sciences ， 2005.
+黄伟 . 机群系统容错中间件技术研究 ［D］. 北京： 中国科学院研究生
+院 （ 计算技术研究所 ） ， 2005.
+［30］ XU C Q. Research and implementation of key technologies on high-avail‐
+ability cluster system ［D］. Nanjing ：Nanjing University of Aeronautics
+and Astronautics ， 2014.
+徐超群 . 高可用集群系统关键技术的研究与实现 ［D］. 南京： 南京航
+空航天大学， 2014.
+［31］ LINUX-HA. Linux-HA ［EB/OL］. http ：//www. linux-ha. org/wiki/
+Main_Page.
+［32］ OPENSSI. The open SSI project ［EB/OL］. https：//openssi. org.
+［33］ KAUR K ， GARG S ， KADDOUM G ， et al. KEIDS ： kubernetes-based
+energy and interference driven scheduler for industrial IoT in edge-cloud
+ecosystem ［J］. IEEE Internet of Things Journal ， 2020 ， 7（5） ： 4228-
+4237.
+［34］ NINGG. Kubernetes family ： core architecture ［EB/OL］. http ：//ningg.
+top/kubernetes-series-03-architecture/.
+NINGG. Kubernetes 系列： 核心架构 ［EB/OL］. http：//ningg. top/kuber‐
+netes-series-03-architecture/.
+［35］ Kubernetes. Creating highly available clusters with kubeadm ［EB/OL］.
+https：//kubernetes. io/docs/setup/production-environment/tools/kubeadm/
+high-availability/.
+［36］ Zhihu. Mastering kubernetes ： best practices for high availability ［EB/
+OL］. https：//zhuanlan. zhihu. com/p/178117026.
+知乎 . 精通 Kubernetes： 高可用性最佳实践 ［EB/OL］. https ：//zhuan‐
+lan. zhihu. com/p/178117026.
+［37］ CSDN. Kubernetes container life cycle - container detection （liveness/
+readiness probes） ［EB/OL］. https：//blog. csdn. net/weixin_44352521/ar‐
+· ·95
+===== PAGE 12 =====
+2023 年软 件 导 刊
+ticle/details/119733747.
+CSDN. Kubernetes 容 器 生 命 周 期 — 容 器 探 测 （liveness/readiness
+probes） ［EB/OL］. https ：//blog. csdn. net/weixin_44352521/article/de‐
+tails/119733747.
+［38］ BALALAIE A ， HEYDARNOORI A ， JAMSHIDI P. Microservices archi‐
+tecture enables DevOps migration to a cloud-native architecture ［J］.
+IEEE Software ， 2016， 33（3） ： 42-52.
+［39］ FAN L ， LIAO Z S. A DevOps automated operation and maintenance plat‐
+form in the cloud computing era ［J］. Telecom Engineering Technics and
+Standardization ， 2018， 31（11） ：63-66.
+樊炼， 廖振松 . 一种云计算时代的 DevOps 自动化运维平台 ［J］. 电
+信工程技术与标准化， 2018， 31（11） ：63-66.
+［40］ FAN G W. Container-based DevOps cloud platform design and system
+testing ［J］. Scientific and Technological Innovation ， 2021 （32） ：
+119-122.
+范国伟 . 基于容器的 DevOps 云平台设计及系统测试 ［J］. 科学技术
+创新， 2021（32） ：119-122.
+［41］ CHEN B H ， LI L. Research on resource expansion and reduction method
+based on collecting task operation information ［J］. Guangdong Communi‐
+cation Technology ， 2021， 41（11） ：50-52，62.
+陈博豪， 李凌 . 基于采集任务运行信息的资源扩缩容方法的研究
+［J］. 广东通信技术， 2021， 41（11） ：50-52，62.
+［42］ Kubernetes. Horizontal pod autoscaling ［EB/OL］. https：//kubernetes. io/
+docs/tasks/run-application/horizontal-pod-autoscale/.
+［43］ Huawei Docker Practice Group. Docker advanced and actual combat
+［M］. Beijing： China Machine Press ， 2016.
+华为 Docker 实践小组 . Docker 进阶与实战 ［M］. 北京： 机械工业出版
+社， 2016.
+［44］ DOCKER. Docker ： overview ［EB/OL］. https ：//docs. docker. com/get-
+started/overview/.
+［45］ Zhihu. What is the K8s ［EB/OL］. https ：//zhuanlan. zhihu. com/p/
+103124918.
+知乎 . 什么是 K8s［EB/OL］. https：//zhuanlan. zhihu. com/p/103124918.
+［46］ CSDN. Kubernetes detailed tutorial —introduction to Kubernetes （1）
+［EB/OL］. https：//blog. csdn. net/lxwh0323/article/details/121594850.
+CSDN. Kubernetes 详 细 教 程
+——Kubernetes 介 绍 （一） ［EB/OL］.
+https：//blog. csdn. net/lxwh0323/article/details/121594850.
+［47］
+Kubernetes. Kubernetes components ［EB/OL］. https ：//kubernetes. io/
+docs/concepts/overview/components/.
+［48］ CSDN. Kubernetes day one ［EB/OL］. https ：//blog. csdn. net/qq_
+37607070/article/details/117202650.
+CSDN. Kubernetes 第 一 天 ［EB/OL］. https ：//blog. csdn. net/qq_
+37607070/article/details/117202650.
+［49］ CSDN. ［k8s］ Chapter 1 ：takes you to understand the core concepts of Ku‐
+bernetes in ten minutes ［EB/OL］. https ：//blog. csdn. net/agonie201218/
+article/details/120028504.
+CSDN. ［k8s］ 第 一 章 ： 十 分 钟 带 你 理 解Kubernetes 核 心 概 念 ［EB/
+OL］. https：//blog. csdn. net/agonie201218/article/details/120028504.
+［50］ CSDN. Kubernetes common objects ［EB/OL］. https ：//blog. csdn. net/
+hellozhxy/article/details/106080137. CSDN. Kubernetes 常 用 对 象
+［EB/OL］. https：//blog. csdn. net/hellozhxy/article/details/106080137.
+［51］ GuideKubernetes. Namespace ［EB/OL］. https ：//kubernetes. feisky. xyz/
+concepts/objects/namespace. Kubernetes
+Kubernetes 指南 . Namespace ［EB/OL］. https：//kubernetes. feisky. xyz/
+concepts/objects/namespace.
+［52］ YAN J Y. The definitive guide to Kubernetes ： enterprise container cloud
+in action ［M］. Beijing： Publishing House of Electronics Industry ， 2018.
+闫健勇 . Kubernetes 权威指南： 企业级容器云实战 ［M］. 北京： 电子工
+业出版社， 2018.
+［53］ Kubernetes. CHANGELOG-1. 20. md ［EB/OL］. https ：//github. com/ku‐
+bernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1. 20.
+md#deprecation.
+［54］ Kubernetes. Don't panic ： kubernetes and Docker ［EB/OL］. https ：//ku‐
+bernetes. io/blog/2020/12/02/dont-panic-kubernetes-and-docker/.
+［55］ RANCHER. K3s ： overview ［EB/OL］. https ：//docs. rancher. cn/docs/
+k3s/_index/.
+［56］ SUN J P. On the advantages of Service Mesh in microservice architecture
+［J］. Communications World ， 2018（23） ：49.
+孙 杰 平. 论 Service Mesh 在 微 服 务 架 构 中 的 优 势 ［J］. 通 信 世 界 ，
+2018（23） ：49.
+［57］ ZHAO P ， LIU C ， JIA Z Y ， et al. Service mesh deployment practice in
+high availability environment ［J］. Information and Communications
+Technologies ， 2021， 15（3） ：42-47.
+， 刘畅， 贾智宇， 等 . 高可用环境下的服务网格部署实践 ［J］.
+信息通信技术， 2021， 15（3） ：42-47.
+［58］ Zhihu. The sidecar pattern ： the key to next-generation microservice ar‐
+chitectures ［EB/OL］. https：//zhuanlan. zhihu. com/p/40854123.
+知 乎 . sidecar 模 式 ： 下 一 代 微 服 务 架 构 的 关 键 ［EB/OL］. https ：//
+zhuanlan. zhihu. com/p/40854123.
+［59］ BURNS B ， OPPENHEIMER D. Design patterns for container-based dis‐
+tributed systems［C］//Proceedings of the 8th USENIX Conference on Hot
+Topics in Cloud Computing ， 2016：108-113.
+［60］ Baeldung. Service mesh architecture with Istio ［EB/OL］. https ：//www.
+baeldung. com/ops/istio-service-mesh.
+［61］ Istio. The Istio Service Mesh ［EB/OL］. https ：//istio. io/latest/about/ser‐
+vice-mesh/.
+［62］ TAO Z ， XIANG Z Q. Research and implement of micro-services archi‐
+tecture Service Mesh ［J］. Techniques of Automation & Applications ，
+2020， 39（1） ：49-53.
+陶志， 向忠清 . 微服务架构 Service Mesh 的设计与应用 ［J］. 自动化
+技术与应用， 2020， 39（1） ：49-53.
+［63］ LIU J H. Service Mesh microservice architecture design ［M］. Beijing ：
+China Machine Press ， 2019.
+刘俊海 . Service Mesh 微服务架构设计 ［M］. 北京： 机械工业出版社，
+2019.
+［64］ GONG S. Design and implementation of e-commerce platform based on
+microservice architecture ［D］. Beijing ： Beijing Jiaotong University ，
+2021.
+龚森 . 基于微服务架构的电商平台设计与实现 ［D］. 北京： 北京交通
+大学， 2021.
+［65］ SU K J. Design of technology resource sharing platform based on mi‐
+croservice ［J］. Electronic Technology ， 2020， 49（11） ：34-36.
+苏矿军 . 基于微服务的科技资源共享平台的设计 ［J］. 电子技术，
+2020， 49（11） ：34-36.
+［66］ JONAS E ， SCHLEIER-SMITH J ， SREEKANTI V ， et al. Cloud pro‐
+gramming simplified ： a berkeley view on serverless computing ［DB/OL］.
+https：//arxiv. org/abs/1902. 03383v1.
+［67］ XU M ， TOOSI A N ， BUYYA R. A self-adaptive approach for managing
+applications and harnessing renewable energy for sustainable cloud com‐
+puting ［J］. IEEE Transactions on Sustainable Computing ， 2021 ， 6（4） ：
+544-558.
+［68］ Kubernetes. Service ［EB/OL］.
+https：//kubernetes. io/docs/concepts/ser‐
+· ·96
+===== PAGE 13 =====
+第 7 期 曹 政， 王 楠， 李宝安， 等： 基于微服务容器化的分布式开源社区实现
+vices-networking/service/.
+［69］ Kubernetes. Ingress ［EB/OL］. https ：//kubernetes. io/docs/concepts/ser‐
+vices-networking/ingress/.
+［70］ Kubernetes. Deploy and access the kubernetes dashboard ［EB/OL］.
+https：//kubernetes. io/docs/tasks/access-application-cluster/web-ui-
+dashboard/.
+［71］ Kubernetes. Client libraries ［EB/OL］. https ：//kubernetes. io/docs/refer‐
+ence/using-api/client-libraries/.
+［72］ SHI W S ， SUN H ， CAO J ， et al. Edge computing an emerging comput‐
+ing model for the Internet of everything era ［J］. Journal of Computer Re‐
+search and Development ，2017， 54（5） ：907-924.
+施巍松， 孙辉， 曹杰， 等 . 边缘计算： 万物互联时代新型计算模型
+［J］. 计算机研究与发展，2017，54（5） ：907-924.
+［73］ Wikipedia. Edge computing ［EB/OL］. https ：//en. wikipedia. org/wiki/
+Edge_computing.
+［74］ LOPEZ P G ， MONTRESOR A ， EPEMA D ， et al. Edge-centric comput‐
+ing： vision and challenges ［J］. Computer Communication Review ，
+2015， 45（5） ：37-42.
+［75］ ZHAO Z M ， LIU F ， CAI Z P ， et al. Edge computing ：platforms，applica‐
+tions and challenges ［J］. Journal of Computer Research and Develop‐
+ment，2018， 55（2） ：327-337.
+赵梓铭， 刘芳， 蔡志平， 等 . 边缘计算： 平台、 应用与挑战 ［J］. 计算
+机研究与发展， 2018， 55（2） ：327-337.
+［76］ SHI W S ， ZHANG X Z ， WANG Y F ， et al. Edge computing ：state-of-
+the-art and future directions ［J］. Journal of Computer Research and De‐
+velopment， 2019， 56（1） ：69-89.
+施巍松， 张星洲， 王一帆， 等 . 边缘计算： 现状与展望 ［J］. 计算机研
+究与发展， 2019， 56（1） ：69-89.
+［77］ LEE S ， L-APHAN ， D-HPARK ， et al. EdgeX over kubernetes ： en‐
+abling container orchestration in EdgeX ［J］. Applied Sciences-Basel ，
+2022， 12（1） ： 140.
+［78］ FOUNDRY E. Why EdgeX ？ ［EB/OL］. https ：//www. edgexfoundry.
+org/why_edgex/why-edgex/.
+［79］ HASSAN N ， K-L AYAU ， WU C. Edge computing in 5G ： a review ［J］.
+E Access， 2019， 7： 127276-127289.
+［80］ LI F C ， LI Y Z ， TANG X Y ， et al. Considerations on the key solutions
+and applications of MEC ［J］. Designing Techniques of Posts and Tele‐
+communications ， 2016（11） ：81-86.
+李福昌， 李一喆， 唐雄燕， 等 . MEC 关键解决方案与应用思考 ［J］.
+邮电设计技术， 2016（11） ：81-86.
+［81］ Zhihu. Talking about MEC ［EB/OL］. https ：//zhuanlan. zhihu. com/p/
+33324744.
+知乎 . 浅谈 MEC ［EB/OL］. https：//zhuanlan. zhihu. com/p/33324744.
+［82］ XING Z ， SHAO W X ， GAO F. Development and research of 5G + indus‐
+trial Internet capacity ［J］. ZTE Technology Journal ， 2020， 26：7-10.
+邢真， 邵伟翔， 高峰 . 5G+ 工业互联网能力开放进展和研究 ［J］. 中
+兴通讯技术， 2020，26（6） ：7-10.
+［83］ DONG Y C ， YI X B ， LI X Y. Edge computing technology architecture
+and application of 5G industrial Internet ［J］. Network Security Technolo‐
+gy & Application ， 2021（12） ：73-75.
+董昱呈， 伊学博， 李雪妍 . 5G 工业互联网的边缘计算技术架构与应
+用 ［J］. 网络安全技术与应用， 2021（12） ：73-75.
+（ 责任编辑 ： 黄 健 ）
+· ·97

@@ -10,7 +10,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(title="api-gateway", version="0.1.0")
+ENABLE_API_DOCS = os.getenv("ENABLE_API_DOCS", "false").strip().lower() in {"1", "true", "yes", "on"}
+
+app = FastAPI(
+    title="api-gateway",
+    version="0.2.0",
+    docs_url="/docs" if ENABLE_API_DOCS else None,
+    redoc_url=None,
+    openapi_url="/openapi.json" if ENABLE_API_DOCS else None,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -79,6 +87,17 @@ def community_issues(state: str = "open", per_page: int = 20) -> dict:
         raise HTTPException(status_code=502, detail=f"Community service unavailable: {exc}") from exc
 
 
+@app.get("/api/community/org-repositories")
+def community_org_repositories(org: str | None = None, per_page: int = 20) -> dict:
+    query = {"per_page": per_page}
+    if org:
+        query["org"] = org
+    try:
+        return call_json(COMMUNITY_SERVICE_URL, "/org_repositories", query=query)
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail=f"Community service unavailable: {exc}") from exc
+
+
 @app.get("/api/benchmarks/tasks")
 def benchmark_tasks() -> dict:
     try:
@@ -95,7 +114,7 @@ def benchmark_leaderboard() -> dict:
         raise HTTPException(status_code=502, detail=f"Benchmark service unavailable: {exc}") from exc
 
 
-@app.post("/api/benchmarks/run")
+@app.post("/api/benchmarks/run", include_in_schema=False)
 def benchmark_run(payload: dict) -> dict:
     try:
         return call_json(BENCHMARK_SERVICE_URL, "/run", method="POST", payload=payload)
@@ -103,7 +122,15 @@ def benchmark_run(payload: dict) -> dict:
         raise HTTPException(status_code=502, detail=f"Benchmark service unavailable: {exc}") from exc
 
 
-@app.post("/api/llm/chat")
+@app.post("/api/assistant/chat")
+def assistant_chat(payload: dict) -> dict:
+    try:
+        return call_json(LLM_SERVICE_URL, "/chat", method="POST", payload=payload)
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail=f"LLM service unavailable: {exc}") from exc
+
+
+@app.post("/api/llm/chat", include_in_schema=False)
 def llm_chat(payload: dict) -> dict:
     try:
         return call_json(LLM_SERVICE_URL, "/chat", method="POST", payload=payload)
@@ -115,6 +142,41 @@ def llm_chat(payload: dict) -> dict:
 def resources_catalog() -> dict:
     try:
         return call_json(RESOURCE_SERVICE_URL, "/catalog")
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail=f"Resource service unavailable: {exc}") from exc
+
+
+@app.get("/api/resources/community-items", include_in_schema=False)
+def resources_community_items(module: str | None = None, limit: int = 200) -> dict:
+    query = {"limit": limit}
+    if module:
+        query["module"] = module
+    try:
+        return call_json(RESOURCE_SERVICE_URL, "/community_items", query=query)
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail=f"Resource service unavailable: {exc}") from exc
+
+
+@app.post("/api/resources/community-items", include_in_schema=False)
+def resources_create_community_item(payload: dict) -> dict:
+    try:
+        return call_json(RESOURCE_SERVICE_URL, "/community_items", method="POST", payload=payload)
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail=f"Resource service unavailable: {exc}") from exc
+
+
+@app.patch("/api/resources/community-items/{item_id}", include_in_schema=False)
+def resources_update_community_item(item_id: int, payload: dict) -> dict:
+    try:
+        return call_json(RESOURCE_SERVICE_URL, f"/community_items/{item_id}", method="PATCH", payload=payload)
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail=f"Resource service unavailable: {exc}") from exc
+
+
+@app.delete("/api/resources/community-items/{item_id}", include_in_schema=False)
+def resources_delete_community_item(item_id: int) -> dict:
+    try:
+        return call_json(RESOURCE_SERVICE_URL, f"/community_items/{item_id}", method="DELETE")
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError) as exc:
         raise HTTPException(status_code=502, detail=f"Resource service unavailable: {exc}") from exc
 

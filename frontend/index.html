@@ -3,60 +3,192 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Patent Benchmark Open Community</title>
+    <title>openKG-field 知识社区</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <div class="bg-glow"></div>
+    <div class="bg-grid"></div>
     <header class="hero">
-      <p class="eyebrow">Patent Intelligence Platform</p>
-      <h1>开源社区 + 大模型 + 基准评测</h1>
+      <p class="eyebrow">openKG-field · Open Collaboration</p>
+      <h1>openKG-field 开源协作社区</h1>
       <p class="subtitle">
-        统一管理 GitHub 项目、数据集、Issue、评测流程与云上节点，服务专利领域智能算法研究与协作。
+        面向专利智能与知识组织的开源内容站点。这里按专题整理任务榜、前沿动态、资源索引与社区讨论，所有条目都可直达
+        GitHub 继续阅读与协作。
       </p>
+      <div class="hero-actions">
+        <a class="pill-link" href="https://github.com/openKG-field" target="_blank" rel="noreferrer">参与 GitHub 协作</a>
+        <a class="pill-link ghost" href="#knowledge-index">从社区入口开始</a>
+      </div>
     </header>
 
-    <main class="grid">
-      <section class="card" id="community-card">
-        <h2>GitHub 社区总览</h2>
-        <div class="kv-grid" id="community-overview"></div>
-        <h3>近期 Issues</h3>
-        <div id="issues-list" class="list"></div>
-      </section>
+    <main class="workspace">
+      <aside class="side-nav">
+        <a href="#community-linkage">社区看板</a>
+        <a href="#topic-entrance">共建入口</a>
+        <a href="#literature-board">文献任务榜</a>
+        <a href="#ai-frontier">前沿观察</a>
+        <a href="#open-sharing">资源共享</a>
+        <a href="#topic-forum">讨论广场</a>
+        <a href="#community-assistant">AI 共创助手</a>
+        <a href="#reading-studio">社区笔记</a>
+        <a href="#knowledge-index">内容索引</a>
+        <a href="#linkage-map">项目关联</a>
+        <a href="#editorial-notes">社区纪要</a>
+      </aside>
 
-      <section class="card" id="benchmark-card">
-        <h2>基准评测</h2>
-        <label for="task-select">任务</label>
-        <select id="task-select"></select>
+      <div class="content">
+        <section class="card" id="community-linkage">
+          <h2>社区看板</h2>
+          <p class="section-note">先看社区状态与活跃议题，再进入你要参与的方向。</p>
+          <div class="kv-grid" id="community-overview"></div>
+          <h3>近期 Issues</h3>
+          <div id="issues-list" class="list"></div>
+          <h3>openKG-field 仓库入口</h3>
+          <div id="org-repos" class="list card-list"></div>
+        </section>
 
-        <label for="predictions">Predictions（每行一个）</label>
-        <textarea id="predictions" rows="5" placeholder="A&#10;B&#10;C"></textarea>
+        <section class="card" id="topic-entrance">
+          <h2>共建入口</h2>
+          <p class="section-note">从任务、前沿、资源、讨论四条主线进入，快速定位可参与的模块。</p>
+          <div class="entrance-grid">
+            <a class="entrance-card" href="#literature-board">
+              <h3>文献任务榜</h3>
+              <p>聚合 NLP 与知识图谱任务，集中查看数据集、指标与可复现基线。</p>
+            </a>
+            <a class="entrance-card" href="#ai-frontier">
+              <h3>前沿观察</h3>
+              <p>跟踪实验室项目与趋势议题，把值得跟进的方向带回社区讨论。</p>
+            </a>
+            <a class="entrance-card" href="#open-sharing">
+              <h3>资源共享</h3>
+              <p>汇总代码仓库与配套资料，沉淀可复用资源与实践模板。</p>
+            </a>
+            <a class="entrance-card" href="#topic-forum">
+              <h3>讨论广场</h3>
+              <p>围绕报告、预测与问题展开讨论，形成持续可追踪的协作线索。</p>
+            </a>
+          </div>
+        </section>
 
-        <label for="references">References（每行一个）</label>
-        <textarea id="references" rows="5" placeholder="A&#10;B&#10;D"></textarea>
+        <section class="card" id="literature-board">
+          <h2>文献任务榜</h2>
+          <p class="section-note">从任务视角查看阶段进展：先看榜单，再看卡片里的关键结果。</p>
+          <div id="leaderboard-list" class="list card-list"></div>
+          <h3>任务卡片</h3>
+          <div id="taskboard-list" class="list card-list"></div>
+        </section>
 
-        <button id="run-eval-btn">运行评测</button>
-        <pre id="eval-output" class="output"></pre>
-      </section>
+        <section class="card" id="ai-frontier">
+          <h2>前沿观察</h2>
+          <p class="section-note">按“值得读、值得跟、值得做”三类线索筛选前沿内容。</p>
+          <div id="ai-frontier-list" class="list card-list"></div>
+        </section>
 
-      <section class="card" id="llm-card">
-        <h2>大模型交互</h2>
-        <label for="llm-input">输入问题</label>
-        <textarea id="llm-input" rows="4" placeholder="请给出专利语义匹配任务的数据清洗建议。"></textarea>
-        <button id="ask-llm-btn">发送</button>
-        <pre id="llm-output" class="output"></pre>
-      </section>
+        <section class="card" id="open-sharing">
+          <h2>资源共享</h2>
+          <p class="section-note">收录可长期复用的代码、工具与补充资料入口。</p>
+          <div id="open-sharing-list" class="list card-list"></div>
+        </section>
 
-      <section class="card" id="resource-card">
-        <h2>资源目录</h2>
-        <div id="resource-list" class="list"></div>
-      </section>
+        <section class="card" id="topic-forum">
+          <h2>讨论广场</h2>
+          <p class="section-note">围绕主题持续讨论，沉淀可复用的问题线索与阶段结论。</p>
+          <div id="topic-forum-list" class="list card-list"></div>
+        </section>
+
+        <section class="card" id="community-assistant">
+          <h2>AI 共创助手</h2>
+          <p class="section-note">
+            已接入 OpenAI 兼容大模型，可用于摘要、标签建议与条目整理。把想法贴进来，快速生成可继续共建的版本。
+          </p>
+          <label for="llm-input">输入内容</label>
+          <textarea
+            id="llm-input"
+            rows="5"
+            placeholder="例如：请把这段材料整理成“任务 / 数据集 / 指标 / 链接”四栏，并补充 3 个标签。"
+          ></textarea>
+          <div class="actions">
+            <button id="ask-llm-btn" type="button">生成共建草稿</button>
+          </div>
+          <div id="llm-output" class="output">准备就绪，等待你的想法。</div>
+        </section>
+
+        <section class="card" id="reading-studio">
+          <h2>社区笔记</h2>
+          <p class="section-note">按章节整理阅读要点，支持目录跳转与参考链接。</p>
+          <label for="reading-doc-select">文档</label>
+          <select id="reading-doc-select"></select>
+          <div class="reading-layout">
+            <nav id="reading-toc" class="reading-toc"></nav>
+            <article id="reading-article" class="reading-article"></article>
+          </div>
+        </section>
+
+        <section class="card" id="knowledge-index">
+          <h2>内容索引</h2>
+          <p class="section-note">通过模块、类型与关键词组合筛选，快速检索站内沉淀内容。</p>
+          <div class="filter-grid">
+            <div>
+              <label for="knowledge-module-filter">模块</label>
+              <select id="knowledge-module-filter"></select>
+            </div>
+            <div>
+              <label for="knowledge-type-filter">类型</label>
+              <select id="knowledge-type-filter"></select>
+            </div>
+            <div>
+              <label for="knowledge-keyword">关键词</label>
+              <input id="knowledge-keyword" type="text" placeholder="输入任务、标签或标题关键词" />
+            </div>
+          </div>
+          <div class="knowledge-table-wrap">
+            <table class="knowledge-table">
+              <thead>
+                <tr>
+                  <th>模块</th>
+                  <th>类型</th>
+                  <th>标题</th>
+                  <th>标签</th>
+                  <th>状态</th>
+                  <th>更新时间</th>
+                  <th>详情</th>
+                </tr>
+              </thead>
+              <tbody id="knowledge-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="linkage-map">
+          <h2>项目关联</h2>
+          <p class="section-note">从任务出发串联研究条目、项目实现与数据集来源。</p>
+          <div class="filter-grid">
+            <div>
+              <label for="linkage-paper-filter">研究条目</label>
+              <select id="linkage-paper-filter"></select>
+            </div>
+            <div>
+              <label for="linkage-task-filter">任务</label>
+              <select id="linkage-task-filter"></select>
+            </div>
+          </div>
+          <div id="linkage-canvas" class="linkage-canvas"></div>
+        </section>
+
+        <section class="card" id="editorial-notes">
+          <h2>社区纪要</h2>
+          <p class="section-note">记录社区内容组织方式与阶段摘要，方便后续持续扩展。</p>
+          <div id="taxonomy-view" class="taxonomy"></div>
+          <h3>重点摘录</h3>
+          <div id="pdf-highlights-list" class="list card-list"></div>
+        </section>
+      </div>
     </main>
 
     <script src="/static/app.js"></script>

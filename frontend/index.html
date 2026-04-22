@@ -1,292 +1,129 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openKG-field | 专利智能开源社区</title>
+    <title>社区活动 - 复刻 Events 风格</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <div class="bg-layer"></div>
-    <div class="noise-layer"></div>
-    <div class="halo halo-a"></div>
-    <div class="halo halo-b"></div>
-
-    <header class="site-header">
-      <a class="brand" href="#">
-        <span class="brand-mark"></span>
-        <span class="brand-text">openKG-field</span>
-      </a>
-      <nav class="top-nav">
-        <a href="#community-linkage">社区总览</a>
-        <a href="#topic-entrance">本周入口</a>
-        <a href="#literature-board">任务榜</a>
-        <a href="#knowledge-index">内容索引</a>
-        <a href="#community-assistant">共创助手</a>
-      </nav>
-      <a class="github-entry" href="https://github.com/openKG-field" target="_blank" rel="noreferrer">GitHub</a>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="/">社区活动</a>
+        <nav class="main-nav">
+          <a class="is-active" href="#">活动</a>
+          <a href="#">论文</a>
+          <a href="#">风云榜</a>
+          <a href="#">专栏</a>
+          <a href="#">知识树</a>
+          <a href="#">项目</a>
+          <a href="#">社交</a>
+        </nav>
+        <button class="login-btn" type="button">登录/注册</button>
+      </div>
     </header>
 
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">OpenKG-field Community</p>
-        <h1>把专利智能领域的好内容，持续共建下去</h1>
-        <p class="subtitle">
-          这里汇集文献任务榜、AI 前沿、开源分享和主题讨论。你可以快速找到资料、补充新线索、发起协作，
-          也能把每次讨论沉淀成可复用的社区资产。
-        </p>
-        <div class="hero-actions">
-          <a class="pill-link" href="https://github.com/MMX-11/microservice-open-community" target="_blank" rel="noreferrer">进入社区仓库</a>
-          <a class="pill-link ghost" href="#topic-entrance">浏览本周共建入口</a>
-        </div>
-        <div class="scroll-cue">
-          <span class="scroll-dot"></span>
-          <span>向下查看社区模块</span>
-        </div>
-        <div class="hero-tags">
-          <span>NLP</span>
-          <span>知识图谱</span>
-          <span>Benchmark</span>
-          <span>Open Source</span>
-          <span>Community</span>
-        </div>
-        <div class="hero-metrics">
-          <div class="metric-pill">
-            <span class="metric-value">4</span>
-            <span class="metric-label">核心板块</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-value">1</span>
-            <span class="metric-label">统一入口</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-value">24/7</span>
-            <span class="metric-label">长期协作</span>
-          </div>
-        </div>
+    <section class="search-strip">
+      <div class="search-inner">
+        <input id="global-search-input" type="text" placeholder="搜索活动、标签、关键词" />
+        <button id="global-search-btn" type="button">搜索</button>
       </div>
-      <aside class="hero-panel">
-        <div class="panel-head">社区动态</div>
-        <div class="panel-item">
-          <span class="panel-key">主入口</span>
-          <span class="panel-value">openKG-field GitHub Organization</span>
-        </div>
-        <div class="panel-item">
-          <span class="panel-key">内容结构</span>
-          <span class="panel-value">任务榜 / 前沿 / 分享 / 论坛</span>
-        </div>
-        <div class="panel-item">
-          <span class="panel-key">协作方式</span>
-          <span class="panel-value">Issue · PR · Discussion · 链接沉淀</span>
-        </div>
-        <div class="panel-item">
-          <span class="panel-key">模型能力</span>
-          <span class="panel-value">免费模型接入 · 草稿辅助整理</span>
-        </div>
-        <div class="panel-quick">
-          <a href="#community-linkage">查看社区看板</a>
-          <a href="#community-assistant">打开共创助手</a>
-        </div>
-      </aside>
     </section>
 
-    <div class="signal-bar">
-      <div class="signal-item">
-        <span class="signal-dot"></span>
-        <span>社区内容可追溯到原始链接</span>
-      </div>
-      <div class="signal-item">
-        <span class="signal-dot"></span>
-        <span>支持开放协作与持续更新</span>
-      </div>
-      <div class="signal-item">
-        <span class="signal-dot"></span>
-        <span>免费模型辅助内容共建</span>
-      </div>
-    </div>
-
-    <div class="community-rail">
-      <div class="rail-chip">任务驱动</div>
-      <div class="rail-chip">前沿跟踪</div>
-      <div class="rail-chip">开源共享</div>
-      <div class="rail-chip">社区讨论</div>
-      <div class="rail-chip">AI 共创</div>
-    </div>
-
-    <div class="anchor-bar">
-      <a href="#community-linkage">总览</a>
-      <a href="#topic-entrance">入口</a>
-      <a href="#literature-board">任务榜</a>
-      <a href="#ai-frontier">前沿</a>
-      <a href="#open-sharing">分享</a>
-      <a href="#topic-forum">论坛</a>
-      <a href="#community-assistant">助手</a>
-    </div>
-
-    <main class="workspace">
-      <section class="workspace-head">
-        <p class="workspace-kicker">Community Workflow</p>
-        <h2>从总览进入协作流：发现问题、补充内容、提交链接、持续讨论</h2>
-      </section>
-
-      <section class="card card-wide" id="community-linkage">
-        <h2>社区总览</h2>
-        <p class="section-note">先看整体状态，再进入你最关心的板块。</p>
-        <div class="kv-grid" id="community-overview"></div>
-        <div class="split-head">
-          <h3>近期 Issues</h3>
-          <h3>组织仓库入口</h3>
+    <main class="events-layout">
+      <aside class="filters-panel">
+        <div class="filter-card picked-card">
+          <h3>已选（<span id="selected-count">0</span>）</h3>
+          <button id="reset-filters-btn" type="button" class="ghost-btn">重选</button>
+          <p id="selected-detail">当前未设置筛选条件</p>
         </div>
-        <div class="split-grid">
-          <div id="issues-list" class="list"></div>
-          <div id="org-repos" class="list card-list"></div>
-        </div>
-      </section>
 
-      <section class="card" id="topic-entrance">
-        <h2>共建入口</h2>
-        <p class="section-note">从四条主线进入，快速定位你此刻能参与的内容。</p>
-        <div class="entrance-grid">
-          <a class="entrance-card" href="#literature-board">
-            <span class="entrance-badge">Taskboard</span>
-            <h3>文献任务榜</h3>
-            <p>任务、数据集、指标、基线与评测线索。</p>
-          </a>
-          <a class="entrance-card" href="#ai-frontier">
-            <span class="entrance-badge">Frontier</span>
-            <h3>AI 前沿</h3>
-            <p>实验室、论文与项目动态的连续追踪。</p>
-          </a>
-          <a class="entrance-card" href="#open-sharing">
-            <span class="entrance-badge">Sharing</span>
-            <h3>开源分享</h3>
-            <p>项目与资料归档，支持长期复用。</p>
-          </a>
-          <a class="entrance-card" href="#topic-forum">
-            <span class="entrance-badge">Forum</span>
-            <h3>主题论坛</h3>
-            <p>问题讨论、观察笔记与协作提案。</p>
-          </a>
-        </div>
-      </section>
-
-      <section class="card" id="literature-board">
-        <h2>文献任务榜</h2>
-        <p class="section-note">先看榜单，再看任务卡片中的关键证据与链接。</p>
-        <div id="leaderboard-list" class="list card-list"></div>
-        <h3>任务卡片</h3>
-        <div id="taskboard-list" class="list card-list"></div>
-      </section>
-
-      <section class="card" id="ai-frontier">
-        <h2>AI 前沿</h2>
-        <p class="section-note">聚焦值得跟进的方向与项目。</p>
-        <div id="ai-frontier-list" class="list card-list"></div>
-      </section>
-
-      <section class="card" id="open-sharing">
-        <h2>开源分享</h2>
-        <p class="section-note">沉淀可以直接引用和复用的成果与资料。</p>
-        <div id="open-sharing-list" class="list card-list"></div>
-      </section>
-
-      <section class="card" id="topic-forum">
-        <h2>主题论坛</h2>
-        <p class="section-note">持续讨论问题、报告、预测与下一步行动。</p>
-        <div id="topic-forum-list" class="list card-list"></div>
-      </section>
-
-      <section class="card" id="community-assistant">
-        <h2>AI 共创助手</h2>
-        <p class="section-note">输入草稿，快速整理成可发布、可继续编辑的社区版本。</p>
-        <label for="llm-input">输入内容</label>
-        <textarea
-          id="llm-input"
-          rows="5"
-          placeholder="例如：请整理为『任务 / 数据集 / 指标 / 链接』格式，并补充标签与下一步建议。"
-        ></textarea>
-        <div class="actions">
-          <button id="ask-llm-btn" type="button">生成社区草稿</button>
-        </div>
-        <div id="llm-output" class="output">准备就绪，等待你的内容。</div>
-      </section>
-
-      <section class="card" id="reading-studio">
-        <h2>阅读笔记</h2>
-        <p class="section-note">按文档章节展开，支持目录定位与参考链接查看。</p>
-        <label for="reading-doc-select">文档</label>
-        <select id="reading-doc-select"></select>
-        <div class="reading-layout">
-          <nav id="reading-toc" class="reading-toc"></nav>
-          <article id="reading-article" class="reading-article"></article>
-        </div>
-      </section>
-
-      <section class="card" id="knowledge-index">
-        <h2>内容索引</h2>
-        <p class="section-note">按模块、类型、关键词组合筛选社区沉淀内容。</p>
-        <div class="filter-grid">
-          <div>
-            <label for="knowledge-module-filter">模块</label>
-            <select id="knowledge-module-filter"></select>
-          </div>
-          <div>
-            <label for="knowledge-type-filter">类型</label>
-            <select id="knowledge-type-filter"></select>
-          </div>
-          <div>
-            <label for="knowledge-keyword">关键词</label>
-            <input id="knowledge-keyword" type="text" placeholder="输入标题、任务或标签关键词" />
+        <div class="filter-card">
+          <h3>模块</h3>
+          <div id="module-tabs" class="module-tabs">
+            <button type="button" data-module="all" class="is-active">全部</button>
+            <button type="button" data-module="文献任务榜">文献任务榜</button>
+            <button type="button" data-module="AI前沿">AI前沿</button>
+            <button type="button" data-module="开源分享">开源分享</button>
+            <button type="button" data-module="主题论坛">主题论坛</button>
+            <button type="button" data-module="团队模块">团队模块</button>
+            <button type="button" data-module="博客">博客</button>
           </div>
         </div>
-        <div class="knowledge-table-wrap">
-          <table class="knowledge-table">
-            <thead>
-              <tr>
-                <th>模块</th>
-                <th>类型</th>
-                <th>标题</th>
-                <th>标签</th>
-                <th>状态</th>
-                <th>更新时间</th>
-                <th>详情</th>
-              </tr>
-            </thead>
-            <tbody id="knowledge-table-body"></tbody>
-          </table>
-        </div>
-      </section>
 
-      <section class="card" id="linkage-map">
-        <h2>关联地图</h2>
-        <p class="section-note">把研究条目、任务与数据集关系串起来看。</p>
-        <div class="filter-grid">
-          <div>
-            <label for="linkage-paper-filter">研究条目</label>
-            <select id="linkage-paper-filter"></select>
+        <div class="filter-card">
+          <h3>标签</h3>
+          <div id="tag-filter-list" class="tag-filter-list"></div>
+        </div>
+
+        <div class="filter-card">
+          <h3>社群</h3>
+          <p>加入交流群，接收活动提醒与更新通知。</p>
+          <button type="button" class="join-btn">加入</button>
+        </div>
+      </aside>
+
+      <section class="events-panel">
+        <div id="team-load-alert" class="team-load-alert" hidden></div>
+
+        <div class="events-toolbar">
+          <div class="toolbar-left">
+            <h1>活动</h1>
+            <p>听讲座，来社区。按模块与标签筛选你的关注内容。</p>
           </div>
-          <div>
-            <label for="linkage-task-filter">任务</label>
-            <select id="linkage-task-filter"></select>
+          <div class="toolbar-right">
+            <select id="status-select">
+              <option value="all">全部状态</option>
+              <option value="published">已发布</option>
+              <option value="draft">草稿</option>
+            </select>
+            <select id="sort-select">
+              <option value="updated_desc">综合排序</option>
+              <option value="created_desc">最新发布</option>
+              <option value="title_asc">标题 A-Z</option>
+            </select>
           </div>
         </div>
-        <div id="linkage-canvas" class="linkage-canvas"></div>
-      </section>
 
-      <section class="card" id="editorial-notes">
-        <h2>社区纪要</h2>
-        <p class="section-note">展示内容组织结构与重点摘录，支持持续迭代。</p>
-        <div id="taxonomy-view" class="taxonomy"></div>
-        <h3>重点摘录</h3>
-        <div id="pdf-highlights-list" class="list card-list"></div>
+        <div id="event-list" class="event-list"></div>
+
+        <div class="events-pagination">
+          <button id="page-prev-btn" type="button" class="ghost-btn">上一页</button>
+          <span id="page-indicator">第 1 / 1 页</span>
+          <button id="page-next-btn" type="button" class="ghost-btn">下一页</button>
+        </div>
       </section>
     </main>
+
+    <footer class="site-footer">
+      <a href="#">社区指南</a>
+      <span>电话：(010) 5095 5974</span>
+      <span>邮箱：press@baai.ac.cn</span>
+      <span>© 2026 社区平台</span>
+      <a href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">京ICP备19012194号</a>
+    </footer>
+
+    <button id="assistant-fab" class="assistant-fab" type="button">
+      <strong>Hi,社区课代表来啦</strong>
+      <span>戳我聊聊～</span>
+    </button>
+
+    <section id="assistant-panel" class="assistant-panel" hidden>
+      <header>
+        <h2>社区维护智能体</h2>
+        <button id="assistant-close-btn" type="button">关闭</button>
+      </header>
+      <label for="assistant-focus-input">维护目标</label>
+      <textarea id="assistant-focus-input" rows="4" placeholder="例如：优先巡检团队模块和开源分享，输出本周维护待办。"></textarea>
+      <div class="assistant-actions">
+        <button id="run-maintenance-agent-btn" type="button">运行社区维护智能体</button>
+        <button id="ask-llm-btn" type="button" class="ghost-btn">快速问答</button>
+      </div>
+      <pre id="llm-output">准备就绪，等待你的指令。</pre>
+    </section>
 
     <script src="/static/app.js"></script>
   </body>

@@ -10,8 +10,14 @@ services:
       BENCHMARK_SERVICE_URL: "http://benchmark-service:8002"
       LLM_SERVICE_URL: "http://llm-service:8003"
       RESOURCE_SERVICE_URL: "http://resource-service:8004"
+      LLM_UPSTREAM_TIMEOUT_SECONDS: "${LLM_UPSTREAM_TIMEOUT_SECONDS:-120}"
       FRONTEND_DIR: "/app/frontend"
       ENABLE_API_DOCS: "${ENABLE_API_DOCS:-false}"
+      SMTP_HOST: "${SMTP_HOST:-}"
+      SMTP_PORT: "${SMTP_PORT:-465}"
+      SMTP_USER: "${SMTP_USER:-}"
+      SMTP_PASS: "${SMTP_PASS:-}"
+      FROM_EMAIL: "${FROM_EMAIL:-}"
     depends_on:
       - community-service
       - benchmark-service
@@ -26,6 +32,8 @@ services:
       dockerfile: services/community-service/Dockerfile
     environment:
       GITHUB_ORG: "${GITHUB_ORG:-openKG-field}"
+      GITHUB_FORUM_ORG: "${GITHUB_FORUM_ORG:-openKG-field}"
+      GITHUB_FORUM_MAX_RESULTS: "${GITHUB_FORUM_MAX_RESULTS:-30}"
       GITHUB_OWNER: "${GITHUB_OWNER}"
       GITHUB_REPO: "${GITHUB_REPO}"
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
@@ -45,6 +53,15 @@ services:
       context: .
       dockerfile: services/llm-service/Dockerfile
     environment:
+      OPENCLAW_BASE_URL: "${OPENCLAW_BASE_URL:-}"
+      OPENCLAW_API_KEY: "${OPENCLAW_API_KEY:-}"
+      OPENCLAW_MODEL: "${OPENCLAW_MODEL:-}"
+      CLOW_BASE_URL: "${CLOW_BASE_URL:-}"
+      CLOW_API_KEY: "${CLOW_API_KEY:-}"
+      CLOW_MODEL: "${CLOW_MODEL:-}"
+      LOBSTER_BASE_URL: "${LOBSTER_BASE_URL:-}"
+      LOBSTER_API_KEY: "${LOBSTER_API_KEY:-}"
+      LOBSTER_MODEL: "${LOBSTER_MODEL:-}"
       OPENAI_COMPATIBLE_BASE_URL: "${OPENAI_COMPATIBLE_BASE_URL}"
       OPENAI_COMPATIBLE_API_KEY: "${OPENAI_COMPATIBLE_API_KEY}"
       OPENAI_COMPATIBLE_MODEL: "${OPENAI_COMPATIBLE_MODEL}"
@@ -61,4 +78,12 @@ services:
     environment:
       RESOURCE_FILE: "/app/resources/catalog.json"
       RESOURCE_DB_FILE: "/app/data/community.db"
+      ARXIV_AUTO_SYNC_ENABLED: "${ARXIV_AUTO_SYNC_ENABLED:-true}"
+      ARXIV_AUTO_SYNC_INTERVAL_HOURS: "${ARXIV_AUTO_SYNC_INTERVAL_HOURS:-24}"
+      ARXIV_AUTO_SYNC_INITIAL_DELAY_SECONDS: "${ARXIV_AUTO_SYNC_INITIAL_DELAY_SECONDS:-60}"
+      ARXIV_AUTO_SYNC_RETRY_SECONDS: "${ARXIV_AUTO_SYNC_RETRY_SECONDS:-3600}"
+      ARXIV_AUTO_SYNC_MAX_RESULTS: "${ARXIV_AUTO_SYNC_MAX_RESULTS:-12}"
+      ARXIV_AUTO_SYNC_QUERY: "${ARXIV_AUTO_SYNC_QUERY:-cat:cs.AI OR cat:cs.LG OR cat:cs.CL OR cat:cs.CV OR cat:cs.RO OR cat:stat.ML}"
+      ARXIV_AUTO_SYNC_DAILY_AT: "${ARXIV_AUTO_SYNC_DAILY_AT:-03:30}"
+      ARXIV_AUTO_SYNC_USE_LLM_TRANSLATION: "${ARXIV_AUTO_SYNC_USE_LLM_TRANSLATION:-true}"
 

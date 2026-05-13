@@ -3,32 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>社区活动 - 复刻 Events 风格</title>
+    <title>Metalab开源社区 | 文献领域协作平台</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260513.2" />
   </head>
   <body>
     <header class="topbar">
       <div class="topbar-inner">
-        <a class="brand" href="/">社区活动</a>
+        <a class="brand" href="/">Metalab开源社区</a>
         <nav class="main-nav">
-          <a class="is-active" href="#">活动</a>
-          <a href="#">论文</a>
-          <a href="#">风云榜</a>
-          <a href="#">专栏</a>
-          <a href="#">知识树</a>
-          <a href="#">项目</a>
-          <a href="#">社交</a>
+          <a class="is-active" href="#" data-nav-module-key="all">社区总览</a>
+          <a href="#" data-nav-module-key="taskboard">文献任务榜</a>
+          <a href="#" data-nav-module-key="frontier">AI前沿</a>
+          <a href="#" data-nav-module-key="sharing">开源分享</a>
+          <a href="#" data-nav-module-key="forum">主题论坛</a>
+          <a href="#" data-nav-module-key="team">团队模块</a>
         </nav>
-        <button class="login-btn" type="button">登录/注册</button>
+        <div class="topbar-actions">
+          <button id="open-login-modal" type="button" class="ghost-btn">登录</button>
+          <span id="auth-user-chip" class="auth-user-chip" hidden></span>
+          <button id="open-admin-modal" type="button" class="ghost-btn" hidden>管理后台</button>
+          <button id="auth-logout-btn" type="button" class="ghost-btn" hidden>退出</button>
+          <button id="open-assistant-panel" type="button" class="ghost-btn">智能助手</button>
+          <button id="open-blog-editor" type="button">写博客</button>
+        </div>
       </div>
     </header>
 
     <section class="search-strip">
       <div class="search-inner">
-        <input id="global-search-input" type="text" placeholder="搜索活动、标签、关键词" />
+        <input
+          id="global-search-input"
+          type="text"
+          placeholder="搜索标题、摘要、标签、模块"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          data-1p-ignore="true"
+          data-lpignore="true"
+        />
         <button id="global-search-btn" type="button">搜索</button>
       </div>
     </section>
@@ -42,15 +58,35 @@
         </div>
 
         <div class="filter-card">
-          <h3>模块</h3>
+          <h3>内容分类</h3>
           <div id="module-tabs" class="module-tabs">
-            <button type="button" data-module="all" class="is-active">全部</button>
-            <button type="button" data-module="文献任务榜">文献任务榜</button>
-            <button type="button" data-module="AI前沿">AI前沿</button>
-            <button type="button" data-module="开源分享">开源分享</button>
-            <button type="button" data-module="主题论坛">主题论坛</button>
-            <button type="button" data-module="团队模块">团队模块</button>
-            <button type="button" data-module="博客">博客</button>
+            <button type="button" data-module-key="all" class="is-active">全部</button>
+            <button type="button" data-module-key="taskboard">文献任务榜</button>
+            <button type="button" data-module-key="frontier">AI前沿</button>
+            <button type="button" data-module-key="sharing">开源分享</button>
+            <button type="button" data-module-key="forum">主题论坛</button>
+            <button type="button" data-module-key="team">团队模块</button>
+          </div>
+        </div>
+
+        <div class="filter-card">
+          <h3>时间</h3>
+          <div id="time-tabs" class="module-tabs">
+            <button type="button" data-time="all" class="is-active">全部时间</button>
+            <button type="button" data-time="recent7">近7天</button>
+            <button type="button" data-time="recent30">近30天</button>
+            <button type="button" data-time="undated">长期内容</button>
+          </div>
+        </div>
+
+        <div class="filter-card">
+          <h3>内容分级</h3>
+          <div id="quality-tabs" class="module-tabs">
+            <button type="button" data-quality="usable_plus" class="is-active">可用+精选</button>
+            <button type="button" data-quality="featured">仅精选</button>
+            <button type="button" data-quality="usable">仅可用</button>
+            <button type="button" data-quality="draft">仅草稿</button>
+            <button type="button" data-quality="all">全部分级</button>
           </div>
         </div>
 
@@ -60,34 +96,129 @@
         </div>
 
         <div class="filter-card">
-          <h3>社群</h3>
-          <p>加入交流群，接收活动提醒与更新通知。</p>
-          <button type="button" class="join-btn">加入</button>
+          <h3>博客（归入开源分享）</h3>
+          <p>博客会自动归入“开源分享”栏目，方便持续沉淀社区内容。</p>
+          <button id="open-blog-editor-side" type="button" class="join-btn">发布博客</button>
         </div>
       </aside>
 
       <section class="events-panel">
-        <div id="team-load-alert" class="team-load-alert" hidden></div>
-
         <div class="events-toolbar">
           <div class="toolbar-left">
-            <h1>活动</h1>
-            <p>听讲座，来社区。按模块与标签筛选你的关注内容。</p>
+            <h1 id="page-title">社区内容广场</h1>
+            <p id="page-subtitle">分类优先，博客作为分享内容的一部分持续更新。</p>
           </div>
           <div class="toolbar-right">
-            <select id="status-select">
-              <option value="all">全部状态</option>
-              <option value="published">已发布</option>
-              <option value="draft">草稿</option>
-            </select>
             <select id="sort-select">
               <option value="updated_desc">综合排序</option>
               <option value="created_desc">最新发布</option>
               <option value="title_asc">标题 A-Z</option>
+              <option value="module_asc">按分类</option>
             </select>
+            <div id="view-mode-tabs" class="view-mode-tabs">
+              <button type="button" data-view="card" class="is-active">卡片</button>
+              <button type="button" data-view="list">列表</button>
+            </div>
           </div>
         </div>
 
+        <div id="module-quick-pills" class="quick-pills"></div>
+        <section id="overview-home" class="overview-home" hidden>
+          <section class="community-hero">
+            <div class="hero-copy">
+              <p class="hero-eyebrow">社区总览 · 运营首屏</p>
+              <h2>把任务榜、开源分享、论坛和团队协作收进一个可运营中枢。</h2>
+              <p id="hero-summary" class="hero-lead">当前社区快照会同步展示内容规模、更新节奏和健康风险，方便快速决策。</p>
+              <div class="hero-stats">
+                <div><span>内容总量</span><strong id="hero-total-items">0</strong></div>
+                <div><span>近7天更新</span><strong id="hero-new-7d">0</strong></div>
+                <div><span>博客数量</span><strong id="hero-blog-count">0</strong></div>
+                <div><span>健康评分</span><strong id="hero-health-score">0</strong></div>
+              </div>
+              <div class="hero-actions">
+                <button id="hero-open-assistant" type="button">启动运营助手</button>
+                <button id="hero-open-module-factory" type="button" class="ghost-btn">直达复用模块</button>
+                <button id="hero-open-sharing" type="button" class="ghost-btn" data-hero-module="sharing">直达开源分享</button>
+                <button id="hero-open-forum" type="button" class="ghost-btn" data-hero-module="forum">查看主题论坛</button>
+              </div>
+            </div>
+            <div class="hero-panel">
+              <div class="hero-panel-head">
+                <strong>最近更新</strong>
+                <span>优先看最新和高质量条目</span>
+              </div>
+              <div id="hero-highlights" class="hero-panel-list"></div>
+            </div>
+          </section>
+          <article class="overview-card generated-spotlight-card">
+            <h3>已生成的复用实例</h3>
+            <p class="module-manifest-hint">点击模板卡会直接生成实例，不会跳转到别的页面。这里会马上展示最近生成的组件。</p>
+            <div id="overview-generated-modules" class="generated-module-spotlight"></div>
+          </article>
+          <div class="overview-grid">
+            <article class="overview-card">
+              <h3>模块计数</h3>
+              <div id="overview-module-counts" class="overview-list"></div>
+            </article>
+            <article class="overview-card">
+              <h3>热门标签</h3>
+              <div id="overview-hot-tags" class="overview-tags"></div>
+            </article>
+            <article class="overview-card">
+              <h3>社区健康度</h3>
+              <div id="community-health-score" class="health-score"></div>
+              <div class="health-ring-row">
+                <div class="health-ring">
+                  <span id="community-health-label">健康</span>
+                  <strong id="community-health-value">0</strong>
+                </div>
+                <div class="health-caption">
+                  <div><span>失效链接</span><strong id="ops-dead-links">0</strong></div>
+                  <div><span>待更新(30天)</span><strong id="ops-stale-30">0</strong></div>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="overview-grid lower">
+            <article class="overview-card">
+              <h3>运营看板</h3>
+              <div class="ops-metrics">
+                <div><span>周新增</span><strong id="ops-week-new">0</strong></div>
+                <div><span>周活跃作者</span><strong id="ops-week-authors">0</strong></div>
+              </div>
+              <div id="ops-module-frequency" class="overview-list compact"></div>
+            </article>
+            <article class="overview-card">
+              <h3>贡献榜</h3>
+              <div id="overview-leaderboard" class="overview-list"></div>
+            </article>
+            <article class="overview-card">
+              <h3>月度精选</h3>
+              <div id="overview-monthly-featured" class="overview-list"></div>
+            </article>
+            <article class="overview-card">
+              <h3>可复用模块</h3>
+              <p class="module-manifest-hint">点击模块卡片可直接在下方生成对应模块实例，方便别人拿去做同款功能。</p>
+              <div id="overview-module-manifest" class="module-manifest-list"></div>
+            </article>
+            <article id="module-factory-panel" class="overview-card module-factory-card">
+              <h3>模块工厂</h3>
+              <p class="module-manifest-hint">先点上面的模块卡选择模板，再输入新模块名称，点“生成并保存”就会把同款模块实例直接插到这里。</p>
+              <div class="module-factory-form">
+                <label for="module-factory-name-input">模块实例名称</label>
+                <input id="module-factory-name-input" type="text" placeholder="例如：AI前沿 - 开源版" />
+                <div class="module-factory-actions">
+                  <button id="module-factory-generate-btn" type="button">生成并保存</button>
+                  <button id="module-factory-copy-btn" type="button" class="ghost-btn">复制代码</button>
+                  <button id="module-factory-copy-json-btn" type="button" class="ghost-btn">复制配置</button>
+                  <button id="module-factory-clear-btn" type="button" class="ghost-btn">清空实例</button>
+                </div>
+              </div>
+              <div id="overview-module-factory-meta" class="module-factory-meta"></div>
+              <div id="overview-module-factory" class="module-factory-preview"></div>
+            </article>
+          </div>
+        </section>
         <div id="event-list" class="event-list"></div>
 
         <div class="events-pagination">
@@ -98,33 +229,217 @@
       </section>
     </main>
 
-    <footer class="site-footer">
-      <a href="#">社区指南</a>
-      <span>电话：(010) 5095 5974</span>
-      <span>邮箱：press@baai.ac.cn</span>
-      <span>© 2026 社区平台</span>
-      <a href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">京ICP备19012194号</a>
-    </footer>
-
-    <button id="assistant-fab" class="assistant-fab" type="button">
-      <strong>Hi,社区课代表来啦</strong>
-      <span>戳我聊聊～</span>
-    </button>
-
-    <section id="assistant-panel" class="assistant-panel" hidden>
-      <header>
-        <h2>社区维护智能体</h2>
-        <button id="assistant-close-btn" type="button">关闭</button>
+    <section id="event-detail-drawer" class="event-detail-drawer" hidden>
+      <header class="drawer-header">
+        <h3 id="detail-title">条目详情</h3>
+        <button id="detail-close-btn" type="button" class="ghost-btn">关闭</button>
       </header>
-      <label for="assistant-focus-input">维护目标</label>
-      <textarea id="assistant-focus-input" rows="4" placeholder="例如：优先巡检团队模块和开源分享，输出本周维护待办。"></textarea>
-      <div class="assistant-actions">
-        <button id="run-maintenance-agent-btn" type="button">运行社区维护智能体</button>
-        <button id="ask-llm-btn" type="button" class="ghost-btn">快速问答</button>
+      <div id="detail-meta" class="drawer-meta"></div>
+      <p id="detail-summary" class="drawer-summary"></p>
+      <div id="detail-tags" class="drawer-tags"></div>
+      <div class="drawer-actions">
+        <a id="detail-open-link" href="#" target="_blank" rel="noreferrer">打开原文</a>
+        <button id="detail-copy-btn" type="button" class="ghost-btn">复制链接</button>
       </div>
-      <pre id="llm-output">准备就绪，等待你的指令。</pre>
+      <pre id="detail-content" class="detail-content" hidden></pre>
     </section>
 
-    <script src="/static/app.js"></script>
+    <section id="author-panel" class="event-detail-drawer author-panel" hidden>
+      <header class="drawer-header">
+        <h3 id="author-panel-title">作者页</h3>
+        <button id="author-close-btn" type="button" class="ghost-btn">关闭</button>
+      </header>
+      <p id="author-panel-summary" class="drawer-summary"></p>
+      <div id="author-panel-list" class="overview-list"></div>
+    </section>
+
+    <section id="blog-editor-modal" class="blog-editor-modal" hidden>
+      <div class="blog-editor-card">
+        <header class="drawer-header">
+          <h3 id="blog-editor-title">发布社区博客</h3>
+          <button id="blog-editor-close" type="button" class="ghost-btn">关闭</button>
+        </header>
+        <div id="blog-editor-tip" class="blog-editor-tip" hidden></div>
+
+        <label for="blog-title-input">标题</label>
+        <input id="blog-title-input" type="text" placeholder="例如：开源社区每周进展总结" />
+
+        <label for="blog-author-input">作者</label>
+        <input id="blog-author-input" type="text" placeholder="例如：Metalab 社区运营" />
+
+        <label for="blog-author-avatar-file-input">作者头像（上传图片）</label>
+        <input id="blog-author-avatar-file-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
+        <div id="blog-author-avatar-hint" class="empty-hint" style="padding: 0.4rem 0.5rem;">未选择头像（可选）</div>
+
+        <label for="blog-summary-input">摘要</label>
+        <textarea id="blog-summary-input" rows="3" placeholder="一句话概述这篇博客"></textarea>
+
+        <label for="blog-tags-input">标签（逗号分隔）</label>
+        <input id="blog-tags-input" type="text" placeholder="开源, 社区建设, 分享" />
+
+        <label for="blog-url-input">分享链接（可选）</label>
+        <input id="blog-url-input" type="text" placeholder="https://..." />
+
+        <label for="blog-content-input">正文（Markdown）</label>
+        <textarea id="blog-content-input" rows="9" placeholder="# 本周进展&#10;&#10;- 完成了..."></textarea>
+
+        <div class="blog-template-box">
+          <div class="blog-template-head">
+            <strong>开源分享模板</strong>
+            <button id="blog-template-btn" type="button" class="ghost-btn">套用模板</button>
+          </div>
+          <ul>
+            <li>标题：`[领域] 具体主题`，例如 `[AIGC] 社区博客发布自动化`</li>
+            <li>摘要：建议 30-220 字，包含背景、方案、价值</li>
+            <li>标签：至少 3 个，且包含 `开源分享`</li>
+          </ul>
+        </div>
+
+        <label for="blog-level-input">内容分级</label>
+        <select id="blog-level-input">
+          <option value="usable" selected>可用</option>
+          <option value="featured">精选</option>
+          <option value="draft">草稿</option>
+        </select>
+
+        <div class="assistant-actions">
+          <button id="blog-submit-btn" type="button">发布</button>
+          <button id="blog-clear-btn" type="button" class="ghost-btn">清空</button>
+          <button id="blog-cancel-btn" type="button" class="ghost-btn">取消</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="assistant-modal" class="assistant-modal" hidden>
+      <div class="assistant-card">
+        <header class="drawer-header">
+          <h3>社区智能助手（硅基流动）</h3>
+          <button id="assistant-close-btn" type="button" class="ghost-btn">关闭</button>
+        </header>
+        <p class="assistant-subtitle">先生成执行方案，再按需自动执行安全动作（导入条目、生成草稿），让助手更像“运营同事”而不是只会写建议。</p>
+        <div class="assistant-context">
+          <div class="assistant-context-row">
+            <div><span>内容总量</span><strong id="assistant-total-items">0</strong></div>
+            <div><span>近7天</span><strong id="assistant-recent-7d">0</strong></div>
+            <div><span>健康评分</span><strong id="assistant-health-score">0</strong></div>
+          </div>
+          <p id="assistant-context-note" class="assistant-context-note">可直接选用下方快捷任务，助手会自动填充建议目标。</p>
+        </div>
+        <div class="assistant-tabs">
+          <button id="assistant-tab-maintain" type="button" data-assistant-mode="maintain" class="is-active">社区维护巡检</button>
+          <button id="assistant-tab-open-source" type="button" data-assistant-mode="open_source">开源社区建设</button>
+          <button id="assistant-tab-similar-community" type="button" data-assistant-mode="similar_community">同类社区生成</button>
+        </div>
+        <div id="assistant-presets" class="assistant-presets"></div>
+        <label for="assistant-goal-input" id="assistant-goal-label">维护重点</label>
+        <textarea id="assistant-goal-input" rows="4" placeholder="例如：请做一次本周社区巡检并给出优先级待办"></textarea>
+        <div class="assistant-exec-bar">
+          <label class="assistant-check" for="assistant-auto-exec">
+            <input id="assistant-auto-exec" type="checkbox" />
+            自动执行安全动作（导入条目 / 生成草稿）
+          </label>
+          <label for="assistant-action-budget" class="assistant-budget-label">动作上限</label>
+          <select id="assistant-action-budget">
+            <option value="1">1 个</option>
+            <option value="2" selected>2 个</option>
+            <option value="3">3 个</option>
+          </select>
+        </div>
+        <div class="assistant-actions">
+          <button id="assistant-run-btn" type="button">生成建议</button>
+          <button id="assistant-copy-btn" type="button" class="ghost-btn">复制结果</button>
+          <button id="assistant-cancel-btn" type="button" class="ghost-btn">取消</button>
+        </div>
+        <div id="assistant-tip" class="blog-editor-tip" hidden></div>
+        <pre id="assistant-result" class="detail-content assistant-result" hidden></pre>
+        <pre id="assistant-action-log" class="detail-content assistant-result assistant-action-log" hidden></pre>
+      </div>
+    </section>
+
+    <section id="login-modal" class="assistant-modal" hidden>
+      <div class="assistant-card auth-card auth-layout">
+        <aside class="auth-visual">
+          <h3>欢迎来到社区</h3>
+          <p>连接、协作、共建。支持手机号、邮箱与验证码登录。</p>
+        </aside>
+        <div class="auth-form-area">
+          <input type="text" autocomplete="username" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" />
+          <input type="password" autocomplete="current-password" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" />
+          <header class="drawer-header">
+            <h3>登录 / 注册</h3>
+            <button id="login-close-btn" type="button" class="ghost-btn">关闭</button>
+          </header>
+          <div class="assistant-tabs auth-tabs">
+            <button id="auth-tab-phone" type="button" class="is-active">手机号</button>
+            <button id="auth-tab-email" type="button">邮箱</button>
+          </div>
+          <div class="auth-mode-links">
+            <button id="auth-switch-password" type="button" class="auth-link-btn" hidden>使用密码登录</button>
+            <button id="auth-switch-register" type="button" class="auth-link-btn">注册新账号</button>
+          </div>
+
+          <label for="login-phone-input" id="auth-account-label">手机号</label>
+          <input id="login-phone-input" type="text" placeholder="请输入11位手机号" autocomplete="off" />
+
+          <div id="auth-password-group">
+            <label for="login-password-input">密码</label>
+            <input
+              id="login-password-input"
+              type="password"
+              placeholder="请输入密码"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            />
+          </div>
+          <div id="register-extra-fields" hidden>
+            <label for="register-nickname-input">昵称</label>
+            <input id="register-nickname-input" type="text" placeholder="例如：开源小助手" autocomplete="off" />
+          </div>
+          <div id="login-tip" class="blog-editor-tip" hidden></div>
+          <div class="assistant-actions">
+            <button id="login-submit-btn" type="button">登录</button>
+            <button id="login-cancel-btn" type="button" class="ghost-btn">取消</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-modal" class="assistant-modal" hidden>
+      <div class="assistant-card">
+        <header class="drawer-header">
+          <h3>管理员后台</h3>
+          <button id="admin-close-btn" type="button" class="ghost-btn">关闭</button>
+        </header>
+        <label class="assistant-check" for="moderation-enabled-input">
+          <input id="moderation-enabled-input" type="checkbox" />
+          博客先审后发（普通用户发文自动草稿）
+        </label>
+        <div class="assistant-actions">
+          <button id="moderation-save-btn" type="button">保存设置</button>
+        </div>
+        <label for="new-user-username">新增普通用户 - 用户名</label>
+        <input id="new-user-username" type="text" placeholder="例如 member02" />
+        <label for="new-user-password">新增普通用户 - 密码</label>
+        <input id="new-user-password" type="password" placeholder="至少6位" />
+        <label for="new-user-nickname">新增普通用户 - 昵称</label>
+        <input id="new-user-nickname" type="text" placeholder="例如 社区志愿者A" />
+        <div class="assistant-actions">
+          <button id="create-user-btn" type="button">创建用户</button>
+        </div>
+        <div id="admin-tip" class="blog-editor-tip" hidden></div>
+        <pre id="admin-user-list" class="detail-content assistant-result" hidden></pre>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <a href="#">社区指南</a>
+      <span>邮箱：admin@openkgfield.duckdns.org</span>
+      <span>© 2026 社区平台</span>
+    </footer>
+
+    <script src="/static/components/community-components.js?v=20260513.2"></script>
+    <script src="/static/app.js?v=20260513.2"></script>
   </body>
 </html>

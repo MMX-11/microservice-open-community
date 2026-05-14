@@ -22,8 +22,12 @@ for attempt in $(seq 1 "${MAX_RETRIES}"); do
 done
 
 if [ "${pull_ok}" -ne 1 ]; then
-  echo "WARN: git pull failed after ${MAX_RETRIES} attempts, continue with local code."
+  echo "ERROR: git pull failed after ${MAX_RETRIES} attempts, aborting deployment."
+  exit 1
 fi
+
+echo "[1.5/3] Confirm latest commit..."
+git log --oneline -n 1
 
 echo "[2/4] Pull base image if needed..."
 docker pull python:3.12-slim || true
@@ -50,6 +54,13 @@ if ! curl -fsS "${DOMAIN_HEALTH_URL}"; then
   echo "WARN: domain health check failed, fallback to local endpoint."
   curl -fsS "${LOCAL_HEALTH_URL}"
 fi
+
+echo "[6/4] Reseed catalog-backed community items..."
+curl -fsS -X POST -H "Content-Type: application/json" -d '{}' "http://127.0.0.1:8080/api/resources/community_items/import_catalog_seed" || true
+
+echo "[7/4] Verify frontend version..."
+curl -fsS "http://127.0.0.1:8080/" | grep -Eo 'styles\.css\?v=[0-9.]+' || true
+curl -fsS "http://127.0.0.1:8080/" | grep -Eo 'app\.js\?v=[0-9.]+' || true
 
 echo
 echo "DONE"

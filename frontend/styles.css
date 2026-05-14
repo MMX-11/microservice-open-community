@@ -760,7 +760,7 @@ body.is-home-overview .filters-panel {
 }
 
 .manifest-chip::after {
-  content: "点击生成复用实例";
+  content: "一键安装模块";
   font-size: 0.68rem;
   color: #3b5dc9;
   font-weight: 700;

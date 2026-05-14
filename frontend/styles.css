@@ -747,27 +747,10 @@ body.is-home-overview .filters-panel {
   gap: 0.4rem;
 }
 
-.module-factory-form {
-  display: grid;
-  gap: 0.45rem;
-  margin-bottom: 0.55rem;
-}
-
-.module-factory-form label {
-  font-size: 0.74rem;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.module-factory-form input {
-  border-radius: 10px;
-  background: #fff;
-}
-
 .manifest-chip {
   text-align: left;
   display: grid;
-  gap: 0.45rem;
+  gap: 0.35rem;
   padding: 0.65rem 0.7rem;
   border-radius: 10px;
   border: 1px solid #dfe7f7;
@@ -794,69 +777,8 @@ body.is-home-overview .filters-panel {
   gap: 0.14rem;
 }
 
-.manifest-chip-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.32rem;
-}
-
-.manifest-chip-actions .ghost-btn {
-  padding: 0.18rem 0.42rem;
-  font-size: 0.72rem;
-}
-
 .generated-spotlight-card {
   grid-column: 1 / -1;
-}
-
-.generated-module-spotlight {
-  display: grid;
-  gap: 0.55rem;
-}
-
-.module-factory-card {
-  grid-column: 1 / -1;
-}
-
-.module-factory-meta {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.36rem;
-  margin-bottom: 0.5rem;
-}
-
-.module-factory-meta > div,
-.module-factory-preview-line {
-  border: 1px solid #e3e8f4;
-  border-radius: 8px;
-  padding: 0.34rem 0.42rem;
-  background: #fff;
-  display: flex;
-  justify-content: space-between;
-  gap: 0.4rem;
-}
-
-.module-factory-meta span,
-.module-factory-preview-line strong {
-  color: var(--muted);
-  font-size: 0.72rem;
-}
-
-.module-factory-meta strong,
-.module-factory-preview-line span {
-  color: #1f2a44;
-  font-size: 0.76rem;
-}
-
-.module-factory-preview {
-  margin-top: 0.45rem;
-  display: grid;
-  gap: 0.5rem;
-}
-
-.module-factory-preview-inner {
-  display: grid;
-  gap: 0.3rem;
 }
 
 .module-code-block {
@@ -868,18 +790,6 @@ body.is-home-overview .filters-panel {
   overflow: auto;
   font-size: 0.72rem;
   line-height: 1.45;
-}
-
-.module-factory-actions {
-  margin-top: 0.55rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
-
-.module-factory-preview-block {
-  margin-top: 0.35rem;
 }
 
 .generated-module-card {
@@ -955,6 +865,10 @@ body.is-home-overview .filters-panel {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
+}
+
+.generated-module-actions .ghost-btn {
+  min-width: 88px;
 }
 
 .manifest-chip strong {
@@ -1580,6 +1494,41 @@ body.is-home-overview .filters-panel {
   margin-top: 0.2rem;
   display: flex;
   gap: 0.45rem;
+}
+
+.assistant-reuse-panel {
+  border: 1px solid #d9e3f5;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfcff, #f6f9ff);
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.1rem;
+}
+
+.assistant-reuse-entry {
+  margin-top: 0.05rem;
+}
+
+.assistant-reuse-entry button {
+  min-width: 110px;
+}
+
+.assistant-reuse-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem;
+  align-items: baseline;
+}
+
+.assistant-reuse-head strong {
+  font-size: 0.82rem;
+}
+
+.assistant-reuse-head span {
+  color: var(--muted);
+  font-size: 0.72rem;
 }
 
 .assistant-context {

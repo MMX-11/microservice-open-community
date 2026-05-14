@@ -37,14 +37,17 @@ const ASSISTANT_PRESETS = {
     { label: "冷启动包", mode: ASSISTANT_MODE.similarCommunity, goal: "请为一个新建社区生成冷启动方案，包含首批内容、任务榜、论坛话题和分享条目。" },
   ],
 };
+const ASSISTANT_PANEL_MODE = {
+  maintain: "maintain",
+  moduleReuse: "module_reuse",
+};
 const AUTH_STORAGE_KEY = "metalab_auth_v1";
-const MODULE_FACTORY_STORAGE_KEY = "metalab_module_factory_v1";
 
 const state = {
   allItems: [],
   filtered: [],
   moduleManifest: { version: "", modules: [] },
-  generatedModules: [],
+  installedModules: [],
   selectedModuleTemplateKey: "",
   page: 1,
   search: "",
@@ -57,6 +60,7 @@ const state = {
   activeItemId: "",
   editingBlogId: 0,
   assistantMode: ASSISTANT_MODE.maintain,
+  assistantPanelMode: ASSISTANT_PANEL_MODE.maintain,
   auth: {
     token: "",
     user: null,
@@ -131,28 +135,6 @@ function clearAuthState() {
     localStorage.removeItem(AUTH_STORAGE_KEY);
   } catch (_err) {
     // ignore
-  }
-}
-
-function saveModuleFactoryState() {
-  try {
-    localStorage.setItem(MODULE_FACTORY_STORAGE_KEY, JSON.stringify(state.generatedModules || []));
-  } catch (_err) {
-    // ignore
-  }
-}
-
-function loadModuleFactoryState() {
-  try {
-    const raw = localStorage.getItem(MODULE_FACTORY_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .map((item) => normalizeGeneratedModule(item))
-      .filter(Boolean);
-  } catch (_err) {
-    return [];
   }
 }
 
@@ -1059,10 +1041,7 @@ function renderModuleManifest(manifest) {
             ${source ? `<small>${escapeHtml(source)}</small>` : ""}
             ${description ? `<em>${escapeHtml(description)}</em>` : ""}
           </div>
-          <div class="manifest-chip-actions">
-            <button type="button" class="ghost-btn" data-manifest-action="generate" data-manifest-key="${escapeHtml(key)}">直接生成</button>
-            <button type="button" class="ghost-btn" data-manifest-action="copy-json" data-manifest-key="${escapeHtml(key)}">复制配置</button>
-          </div>
+          <button type="button" class="ghost-btn" data-manifest-action="install" data-manifest-key="${escapeHtml(key)}">一键安装</button>
         </div>
       `;
     })
@@ -1081,160 +1060,124 @@ function getModuleTemplate(key) {
   };
 }
 
-function makeSafeExportName(label) {
-  let name = String(label || "Module").replace(/[^\w\u4e00-\u9fff]/g, "");
-  if (!name) name = "Module";
-  if (!/^[A-Za-z_\u4e00-\u9fff]/.test(name)) name = `Module${name}`;
-  return `${name}Module`;
-}
-
-function moduleTemplateToCode(template) {
-  const exportName = makeSafeExportName(template.instance_label || template.label || "Module");
-  return `export const ${exportName} = {
-  key: ${JSON.stringify(template.instance_key || template.key)},
-  base_key: ${JSON.stringify(template.key)},
-  label: ${JSON.stringify(template.instance_label || template.label)},
-  base_label: ${JSON.stringify(template.label)},
-  source: ${JSON.stringify(template.source)},
-  default_grouping: ${JSON.stringify(template.default_grouping)},
-  description: ${JSON.stringify(template.description)},
-  render(items) {
-    return items.map((item) => item.title).join("\\n");
-  },
-};`;
-}
-
-function normalizeGeneratedModule(template) {
-  if (!template || typeof template !== "object") return null;
-  const baseKey = String(template.base_key || template.key || "").trim();
-  const baseLabel = String(template.base_label || template.label || "").trim();
-  const instanceLabel = String(template.instance_label || template.label || baseLabel).trim();
-  const instanceKey = String(template.instance_key || template.key || baseKey).trim();
-  if (!baseKey && !instanceKey) return null;
-  return {
-    id: String(template.id || `gen-${instanceKey || baseKey}`),
-    key: instanceKey || baseKey,
-    base_key: baseKey,
-    label: instanceLabel,
-    base_label: baseLabel,
-    source: String(template.source || "").trim(),
-    default_grouping: String(template.default_grouping || "module").trim(),
-    description: String(template.description || "").trim(),
-    code: String(template.code || moduleTemplateToCode({
-      key: baseKey,
-      label: baseLabel,
-      instance_key: instanceKey || baseKey,
-      instance_label: instanceLabel,
-      source: template.source,
-      default_grouping: template.default_grouping,
-      description: template.description,
-    })),
-    created_at: String(template.created_at || new Date().toISOString()),
-  };
-}
-
-function renderGeneratedModules() {
-  const root = document.getElementById("overview-module-factory");
-  const metaEl = document.getElementById("overview-module-factory-meta");
-  if (!root || !metaEl) return;
-  if (!state.generatedModules.length) {
-    root.innerHTML = '<div class="empty-hint">先选模板，再输入名称，点“生成并保存”即可生成同款模块实例。</div>';
-    metaEl.innerHTML = '<span class="empty-hint">暂无已生成模块</span>';
-    return;
-  }
-  const current = state.generatedModules[state.generatedModules.length - 1];
-  metaEl.innerHTML = `
-    <div><span>已生成</span><strong>${state.generatedModules.length}</strong></div>
-    <div><span>当前模块</span><strong>${escapeHtml(current.label)}</strong></div>
-    <div><span>生成方式</span><strong>${escapeHtml(current.default_grouping)}</strong></div>
-  `;
-  root.innerHTML = window.CommunityComponents
-    ? [
-        window.CommunityComponents.renderSection({
-          title: `当前模块实例 · ${current.label}`,
-          count: 1,
-          countLabel: "个",
-          sectionClass: "module-block module-factory-preview-block",
-          bodyHtml: `
-            <div class="module-factory-preview-inner">
-              <div class="module-factory-preview-line"><strong>模板来源：</strong><span>${escapeHtml(current.base_label || current.label)}</span></div>
-              <div class="module-factory-preview-line"><strong>实例名称：</strong><span>${escapeHtml(current.label)}</span></div>
-              <div class="module-factory-preview-line"><strong>数据源：</strong><span>${escapeHtml(current.source || "unknown")}</span></div>
-              <div class="module-factory-preview-line"><strong>分组方式：</strong><span>${escapeHtml(current.default_grouping)}</span></div>
-              <div class="module-factory-preview-line"><strong>说明：</strong><span>${escapeHtml(current.description || "无")}</span></div>
-              <pre class="module-code-block">${escapeHtml(current.code)}</pre>
-            </div>
-          `,
-        }),
-        state.generatedModules
+function renderAssistantModuleReuse() {
+  const manifestRoot = document.getElementById("assistant-module-manifest");
+  const installedRoot = document.getElementById("assistant-installed-modules");
+  const panel = document.getElementById("assistant-reuse-panel");
+  if (panel) panel.hidden = false;
+  if (manifestRoot) manifestRoot.innerHTML = renderModuleManifest(state.moduleManifest);
+  if (installedRoot) {
+    installedRoot.innerHTML = state.installedModules.length
+      ? state.installedModules
           .slice()
           .reverse()
-          .map((module) => window.CommunityComponents.renderModuleInstanceCard(module, { active: module.id === current.id }))
-          .join(""),
-      ].join("")
-    : "";
+          .map((module) => window.CommunityComponents.renderModuleInstanceCard(module, { active: false }))
+          .join("")
+      : '<div class="empty-hint">还没有安装模块。先点上面的“一键安装”。</div>';
+  }
 }
 
-function renderGeneratedModuleSpotlight() {
-  const root = document.getElementById("overview-generated-modules");
+function renderInstalledModules() {
+  const root = document.getElementById("overview-installed-modules");
   if (!root) return;
-  if (!state.generatedModules.length) {
-    root.innerHTML = '<div class="empty-hint">还没有生成复用实例。点击左侧模板卡上的“直接生成”即可。</div>';
+  if (!state.installedModules.length) {
+    root.innerHTML = '<div class="empty-hint">还没有安装模块。点击任意模板卡右侧的“一键安装”。</div>';
     return;
   }
-  const latest = state.generatedModules[state.generatedModules.length - 1];
-  const recent = state.generatedModules.slice(-3).reverse();
-  root.innerHTML = recent
-    .map((module) => window.CommunityComponents.renderModuleInstanceCard(module, { active: module.id === latest.id }))
+  root.innerHTML = state.installedModules
+    .slice()
+    .reverse()
+    .map((module) => window.CommunityComponents.renderModuleInstanceCard(module, { active: false }))
     .join("");
 }
 
-function buildModuleInstanceFromTemplate(template, instanceLabel) {
-  const label = String(instanceLabel || template.label || "").trim();
-  const keySuffix = label ? label.replace(/[^\w\u4e00-\u9fff]+/g, "-").toLowerCase() : "";
-  const instanceKey = keySuffix ? `${template.key}__${keySuffix}` : `${template.key}__${Date.now()}`;
-  return normalizeGeneratedModule({
-    ...template,
-    id: `gen-${instanceKey}`,
-    instance_key: instanceKey,
-    instance_label: label,
-    base_key: template.key,
-    base_label: template.label,
-    code: moduleTemplateToCode({
-      ...template,
-      instance_key: instanceKey,
-      instance_label: label,
-    }),
-    created_at: new Date().toISOString(),
-  });
+function getInstalledModuleById(moduleId) {
+  const id = String(moduleId || "").trim();
+  if (!id) return null;
+  return (state.installedModules || []).find((x) => String(x.id || "").trim() === id) || null;
 }
 
-function renderModuleFactoryPreview(moduleKey) {
+async function exportInstalledModulePackage(moduleId, action = "download") {
+  const module = getInstalledModuleById(moduleId);
+  if (!module) return;
+  try {
+    const result = await fetchJson(`/api/resources/community_modules/export?module_id=${encodeURIComponent(module.id)}`, {
+      retry: 0,
+      timeoutMs: 15000,
+    });
+    const packageData = result?.package && typeof result.package === "object" ? result.package : null;
+    if (!packageData) throw new Error("export failed");
+    const text = JSON.stringify(packageData, null, 2);
+    if (action === "copy") {
+      await navigator.clipboard.writeText(text);
+      window.alert("模块包已复制，可直接发给别的社区导入。");
+      return;
+    }
+    const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = String(result?.filename || `module-${module.id}.json`);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    window.alert("模块包已下载。");
+  } catch (err) {
+    window.alert(`导出失败：${formatGatewayError(err)}`);
+  }
+}
+
+async function installModuleTemplate(moduleKey) {
   const template = getModuleTemplate(moduleKey);
   if (!template) return;
   state.selectedModuleTemplateKey = template.key;
-  const nameInput = document.getElementById("module-factory-name-input");
-  if (nameInput && !String(nameInput.value || "").trim()) {
-    nameInput.value = `${template.label} - 复用实例`;
+  try {
+    const result = await fetchJson("/api/resources/community_modules/install", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        template_key: template.key,
+        alias: template.label,
+        replace_existing: true,
+      }),
+      timeoutMs: 20000,
+      retry: 0,
+    });
+    const module = result?.module && typeof result.module === "object" ? result.module : null;
+    if (module) {
+      state.installedModules = [module, ...state.installedModules.filter((x) => x.template_key !== module.template_key)];
+      saveInstalledModulesToStorage();
+    }
+    renderHomeOverview();
+    window.alert(`已安装模块：${template.label}`);
+  } catch (err) {
+    window.alert(`安装失败：${formatGatewayError(err)}`);
   }
-  const instance = buildModuleInstanceFromTemplate(template, String(nameInput?.value || "").trim() || `${template.label} - 复用实例`);
-  state.generatedModules.push(instance);
-  saveModuleFactoryState();
-  renderHomeOverview();
 }
 
-function scrollToModuleFactory() {
-  const panel = document.getElementById("module-factory-panel");
-  if (panel) {
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+async function loadInstalledModulesFromStorage() {
+  try {
+    const result = await fetchJson("/api/resources/community_modules", { retry: 0, timeoutMs: 12000 });
+    return Array.isArray(result?.items) ? result.items : [];
+  } catch (_err) {
+    try {
+      const raw = localStorage.getItem("metalab_installed_modules_v1");
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.filter((x) => x && typeof x === "object") : [];
+    } catch (_e) {
+      return [];
+    }
   }
 }
 
-function openModuleFactoryPanel() {
-  state.moduleKey = "all";
-  state.page = 1;
-  applyFiltersAndRender();
-  window.setTimeout(scrollToModuleFactory, 80);
+function saveInstalledModulesToStorage() {
+  try {
+    localStorage.setItem("metalab_installed_modules_v1", JSON.stringify(state.installedModules || []));
+  } catch (_err) {
+    // ignore
+  }
 }
 
 function renderHomeOverview() {
@@ -1249,11 +1192,6 @@ function renderHomeOverview() {
   const moduleCounts = document.getElementById("overview-module-counts");
   const hotTags = document.getElementById("overview-hot-tags");
   const manifestList = document.getElementById("overview-module-manifest");
-  const factoryCopyBtn = document.getElementById("module-factory-copy-btn");
-  const factoryCopyJsonBtn = document.getElementById("module-factory-copy-json-btn");
-  const factoryClearBtn = document.getElementById("module-factory-clear-btn");
-  const factoryGenerateBtn = document.getElementById("module-factory-generate-btn");
-  const factoryNameInput = document.getElementById("module-factory-name-input");
   const weekNewEl = document.getElementById("ops-week-new");
   const weekAuthorsEl = document.getElementById("ops-week-authors");
   const deadLinksEl = document.getElementById("ops-dead-links");
@@ -1299,81 +1237,8 @@ function renderHomeOverview() {
   hotTags.innerHTML = hotRows.length
     ? hotRows.map(([tag, count]) => `<button type="button" class="tag hot-tag" data-hot-tag="${escapeHtml(tag)}">${escapeHtml(tag)} (${count})</button>`).join("")
     : '<span class="empty-hint">暂无热门标签</span>';
-  if (!state.selectedModuleTemplateKey) {
-    const firstTemplate = Array.isArray(state.moduleManifest?.modules) ? state.moduleManifest.modules[0] : null;
-    if (firstTemplate) {
-      state.selectedModuleTemplateKey = String(firstTemplate.key || firstTemplate.label || "").trim();
-    }
-  }
   manifestList.innerHTML = renderModuleManifest(state.moduleManifest);
-  renderGeneratedModuleSpotlight();
-  renderGeneratedModules();
-
-  if (factoryCopyBtn) {
-    factoryCopyBtn.disabled = !state.generatedModules.length;
-    factoryCopyBtn.onclick = async () => {
-      const current = state.generatedModules[state.generatedModules.length - 1];
-      if (!current) return;
-      try {
-        await navigator.clipboard.writeText(current.code || "");
-        window.alert(`已复制模块代码：${current.label}`);
-      } catch (_err) {
-        window.alert(current.code || "");
-      }
-    };
-  }
-
-  if (factoryCopyJsonBtn) {
-    factoryCopyJsonBtn.disabled = !state.generatedModules.length;
-    factoryCopyJsonBtn.onclick = async () => {
-      const current = state.generatedModules[state.generatedModules.length - 1];
-      if (!current) return;
-      const text = JSON.stringify(current, null, 2);
-      try {
-        await navigator.clipboard.writeText(text);
-        window.alert(`已复制模块配置：${current.label}`);
-      } catch (_err) {
-        window.alert(text);
-      }
-    };
-  }
-
-  if (factoryClearBtn) {
-    factoryClearBtn.disabled = !state.generatedModules.length;
-    factoryClearBtn.onclick = () => {
-      state.generatedModules = [];
-      state.selectedModuleTemplateKey = "";
-      if (factoryNameInput) factoryNameInput.value = "";
-      saveModuleFactoryState();
-      renderHomeOverview();
-    };
-  }
-
-  if (factoryGenerateBtn) {
-    factoryGenerateBtn.onclick = () => {
-      const selectedKey = String(state.selectedModuleTemplateKey || "").trim();
-      const template = getModuleTemplate(selectedKey);
-      if (!template) {
-        window.alert("请先点击上方模块卡选择一个模板。");
-        return;
-      }
-      const instanceLabel = String(factoryNameInput?.value || "").trim() || `${template.label} - 复用实例`;
-      const instance = buildModuleInstanceFromTemplate(template, instanceLabel);
-      state.generatedModules.push(instance);
-      saveModuleFactoryState();
-      renderHomeOverview();
-      applyFiltersAndRender();
-    };
-  }
-
-  if (factoryNameInput) {
-    factoryNameInput.onkeydown = (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        factoryGenerateBtn?.click();
-      }
-    };
-  }
+  renderInstalledModules();
 
   const snapshot = getOverviewSnapshot();
   const metrics = snapshot.metrics;
@@ -1382,7 +1247,7 @@ function renderHomeOverview() {
   const visibleCount = overviewRows.length;
   const blogCount = overviewRows.filter((item) => item.kind === "blog").length;
   if (heroSummary) {
-    heroSummary.textContent = `当前可见 ${visibleCount} 条内容，近 7 天更新 ${metrics.weekNew} 条，健康评分 ${healthScore}，已保存 ${state.generatedModules.length} 个复用实例。`;
+    heroSummary.textContent = `当前可见 ${visibleCount} 条内容，近 7 天更新 ${metrics.weekNew} 条，健康评分 ${healthScore}，已安装 ${state.installedModules.length} 个模块。`;
   }
   if (heroTotalItems) heroTotalItems.textContent = String(visibleCount);
   if (heroNew7d) heroNew7d.textContent = String(metrics.weekNew);
@@ -1700,7 +1565,6 @@ async function loadAllData() {
   state.moduleManifest = manifestRes.status === "fulfilled" && manifestRes.value && typeof manifestRes.value === "object"
     ? manifestRes.value
     : { version: "1.0", modules: [] };
-  state.generatedModules = loadModuleFactoryState();
   state.qualitySummary = qualityRes.status === "fulfilled" && qualityRes.value?.summary ? qualityRes.value.summary : { invalid_url: 0, stale: 0 };
 
   state.allItems = dedupeItems([...communityItems, ...blogItems, ...catalogItems, ...forumItems]);
@@ -2650,29 +2514,10 @@ function bindOverviewInteractions() {
       const action = String(manifestActionBtn.getAttribute("data-manifest-action") || "").trim();
       const key = String(manifestActionBtn.getAttribute("data-manifest-key") || "").trim();
       if (!key) return;
-      if (action === "generate") {
-        renderModuleFactoryPreview(key);
+      if (action === "install") {
+        await installModuleTemplate(key);
         return;
       }
-      if (action === "copy-json") {
-        const template = getModuleTemplate(key);
-        if (!template) return;
-        const text = JSON.stringify(template, null, 2);
-        try {
-          await navigator.clipboard.writeText(text);
-          window.alert(`已复制模板配置：${template.label}`);
-        } catch (_err) {
-          window.alert(text);
-        }
-        return;
-      }
-    }
-
-    const manifestCopyBtn = target.closest("[data-manifest-key]");
-    if (manifestCopyBtn) {
-      const key = String(manifestCopyBtn.getAttribute("data-manifest-key") || "").trim();
-      renderModuleFactoryPreview(key);
-      return;
     }
 
     const hotTagBtn = target.closest("[data-hot-tag]");
@@ -2697,27 +2542,16 @@ function bindOverviewInteractions() {
       if (item) await openDetailDrawer(item);
     }
 
-    const generatedActionBtn = target.closest("[data-generated-action]");
-    if (generatedActionBtn) {
-      const action = String(generatedActionBtn.getAttribute("data-generated-action") || "").trim();
-      const id = String(generatedActionBtn.getAttribute("data-generated-id") || "").trim();
-      const module = state.generatedModules.find((x) => x.id === id);
-      if (!module) return;
-      if (action === "remove") {
-        state.generatedModules = state.generatedModules.filter((x) => x.id !== id);
-        saveModuleFactoryState();
-        renderGeneratedModules();
-        return;
-      }
-      const text = action === "copy-json" ? JSON.stringify(module, null, 2) : module.code || "";
-      try {
-        await navigator.clipboard.writeText(text);
-        window.alert(action === "copy-json" ? `已复制配置：${module.label}` : `已复制代码：${module.label}`);
-      } catch (_err) {
-        window.alert(text);
+    const generatedBtn = target.closest("[data-generated-action]");
+    if (generatedBtn) {
+      const action = String(generatedBtn.getAttribute("data-generated-action") || "").trim();
+      const id = String(generatedBtn.getAttribute("data-generated-id") || "").trim();
+      if (action === "copy" || action === "download") {
+        await exportInstalledModulePackage(id, action);
       }
     }
-  });
+
+  }, true);
 
   authorCloseBtn?.addEventListener("click", closeAuthorPanel);
   authorPanel?.addEventListener("click", async (event) => {
@@ -2874,6 +2708,8 @@ function openAssistantPanel() {
   if (!modal) return;
   modal.hidden = false;
   setAssistantMode(state.assistantMode || ASSISTANT_MODE.maintain);
+  const panel = document.getElementById("assistant-reuse-panel");
+  if (panel) panel.hidden = true;
   const snapshot = getOverviewSnapshot();
   const totalEl = document.getElementById("assistant-total-items");
   const recentEl = document.getElementById("assistant-recent-7d");
@@ -3002,20 +2838,25 @@ async function copyAssistantResult() {
 function bindAssistantPanel() {
   const openBtn = document.getElementById("open-assistant-panel");
   const heroOpenBtn = document.getElementById("hero-open-assistant");
-  const heroFactoryBtn = document.getElementById("hero-open-module-factory");
   const closeBtn = document.getElementById("assistant-close-btn");
   const cancelBtn = document.getElementById("assistant-cancel-btn");
   const runBtn = document.getElementById("assistant-run-btn");
   const copyBtn = document.getElementById("assistant-copy-btn");
+  const reuseToggleBtn = document.getElementById("assistant-reuse-toggle-btn");
   const modal = document.getElementById("assistant-modal");
 
   openBtn?.addEventListener("click", openAssistantPanel);
   heroOpenBtn?.addEventListener("click", openAssistantPanel);
-  heroFactoryBtn?.addEventListener("click", openModuleFactoryPanel);
   closeBtn?.addEventListener("click", closeAssistantPanel);
   cancelBtn?.addEventListener("click", closeAssistantPanel);
   runBtn?.addEventListener("click", runAssistantTask);
   copyBtn?.addEventListener("click", copyAssistantResult);
+  reuseToggleBtn?.addEventListener("click", () => {
+    const panel = document.getElementById("assistant-reuse-panel");
+    if (!panel) return;
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden) renderAssistantModuleReuse();
+  });
 
   document.querySelectorAll("[data-hero-module]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -3055,6 +2896,29 @@ function bindAssistantPanel() {
     if (event.key !== "Escape") return;
     if (modal && !modal.hidden) closeAssistantPanel();
   });
+
+  document.addEventListener("click", async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const manifestActionBtn = target.closest("[data-manifest-action]");
+    if (manifestActionBtn) {
+      const action = String(manifestActionBtn.getAttribute("data-manifest-action") || "").trim();
+      const key = String(manifestActionBtn.getAttribute("data-manifest-key") || "").trim();
+      if (action === "install" && key) {
+        await installModuleTemplate(key);
+        renderAssistantModuleReuse();
+      }
+      return;
+    }
+    const generatedBtn = target.closest("[data-generated-action]");
+    if (generatedBtn) {
+      const action = String(generatedBtn.getAttribute("data-generated-action") || "").trim();
+      const id = String(generatedBtn.getAttribute("data-generated-id") || "").trim();
+      if (action === "copy" || action === "download") {
+        await exportInstalledModulePackage(id, action);
+      }
+    }
+  }, true);
 }
 
 function bindAuthPanel() {
@@ -3116,6 +2980,7 @@ async function validateAuthState() {
 window.addEventListener("DOMContentLoaded", async () => {
   loadAuthState();
   await validateAuthState();
+  state.installedModules = await loadInstalledModulesFromStorage();
   renderAuthUI();
   bindAuthPanel();
   bindAdminPanel();

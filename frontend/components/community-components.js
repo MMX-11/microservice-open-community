@@ -82,7 +82,7 @@
   }
 
   function renderModuleInstanceCard(module, { active = false } = {}) {
-    const label = String(module?.label || "模块实例").trim();
+    const label = String(module?.label || "模块包").trim();
     const baseLabel = String(module?.base_label || module?.label || "模块").trim();
     const source = String(module?.source || "unknown").trim();
     const grouping = String(module?.default_grouping || "module").trim();
@@ -104,9 +104,8 @@
         </div>
         ${renderCodeBlock(code)}
         <div class="generated-module-actions">
-          <button type="button" class="ghost-btn" data-generated-action="copy-code" data-generated-id="${escapeHtml(id)}">复制代码</button>
-          <button type="button" class="ghost-btn" data-generated-action="copy-json" data-generated-id="${escapeHtml(id)}">复制配置</button>
-          <button type="button" class="ghost-btn" data-generated-action="remove" data-generated-id="${escapeHtml(id)}">删除</button>
+          <button type="button" class="ghost-btn" data-generated-action="copy" data-generated-id="${escapeHtml(id)}">复制包</button>
+          <button type="button" class="ghost-btn" data-generated-action="download" data-generated-id="${escapeHtml(id)}">下载包</button>
         </div>
       </article>
     `;

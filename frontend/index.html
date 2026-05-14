@@ -137,7 +137,6 @@
               </div>
               <div class="hero-actions">
                 <button id="hero-open-assistant" type="button">启动运营助手</button>
-                <button id="hero-open-module-factory" type="button" class="ghost-btn">直达复用模块</button>
                 <button id="hero-open-sharing" type="button" class="ghost-btn" data-hero-module="sharing">直达开源分享</button>
                 <button id="hero-open-forum" type="button" class="ghost-btn" data-hero-module="forum">查看主题论坛</button>
               </div>
@@ -150,11 +149,6 @@
               <div id="hero-highlights" class="hero-panel-list"></div>
             </div>
           </section>
-          <article class="overview-card generated-spotlight-card">
-            <h3>已生成的复用实例</h3>
-            <p class="module-manifest-hint">点击模板卡会直接生成实例，不会跳转到别的页面。这里会马上展示最近生成的组件。</p>
-            <div id="overview-generated-modules" class="generated-module-spotlight"></div>
-          </article>
           <div class="overview-grid">
             <article class="overview-card">
               <h3>模块计数</h3>
@@ -195,27 +189,6 @@
             <article class="overview-card">
               <h3>月度精选</h3>
               <div id="overview-monthly-featured" class="overview-list"></div>
-            </article>
-            <article class="overview-card">
-              <h3>可复用模块</h3>
-              <p class="module-manifest-hint">点击模块卡片可直接在下方生成对应模块实例，方便别人拿去做同款功能。</p>
-              <div id="overview-module-manifest" class="module-manifest-list"></div>
-            </article>
-            <article id="module-factory-panel" class="overview-card module-factory-card">
-              <h3>模块工厂</h3>
-              <p class="module-manifest-hint">先点上面的模块卡选择模板，再输入新模块名称，点“生成并保存”就会把同款模块实例直接插到这里。</p>
-              <div class="module-factory-form">
-                <label for="module-factory-name-input">模块实例名称</label>
-                <input id="module-factory-name-input" type="text" placeholder="例如：AI前沿 - 开源版" />
-                <div class="module-factory-actions">
-                  <button id="module-factory-generate-btn" type="button">生成并保存</button>
-                  <button id="module-factory-copy-btn" type="button" class="ghost-btn">复制代码</button>
-                  <button id="module-factory-copy-json-btn" type="button" class="ghost-btn">复制配置</button>
-                  <button id="module-factory-clear-btn" type="button" class="ghost-btn">清空实例</button>
-                </div>
-              </div>
-              <div id="overview-module-factory-meta" class="module-factory-meta"></div>
-              <div id="overview-module-factory" class="module-factory-preview"></div>
             </article>
           </div>
         </section>
@@ -331,6 +304,17 @@
           <button id="assistant-tab-similar-community" type="button" data-assistant-mode="similar_community">同类社区生成</button>
         </div>
         <div id="assistant-presets" class="assistant-presets"></div>
+        <div class="assistant-actions assistant-reuse-entry">
+          <button id="assistant-reuse-toggle-btn" type="button" class="ghost-btn">模块复用</button>
+        </div>
+        <div id="assistant-reuse-panel" class="assistant-reuse-panel" hidden>
+          <div class="assistant-reuse-head">
+            <strong>模块复用</strong>
+            <span>一键安装到本社区，再复制或下载模块包给别的社区导入</span>
+          </div>
+          <div id="assistant-module-manifest" class="module-manifest-list"></div>
+          <div id="assistant-installed-modules" class="generated-module-spotlight"></div>
+        </div>
         <label for="assistant-goal-input" id="assistant-goal-label">维护重点</label>
         <textarea id="assistant-goal-input" rows="4" placeholder="例如：请做一次本周社区巡检并给出优先级待办"></textarea>
         <div class="assistant-exec-bar">

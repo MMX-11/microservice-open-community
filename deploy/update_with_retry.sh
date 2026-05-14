@@ -13,7 +13,7 @@ git config --global http.version HTTP/1.1 || true
 echo "[1/3] Pull latest code (max ${MAX_RETRIES} attempts)..."
 pull_ok=0
 for attempt in $(seq 1 "${MAX_RETRIES}"); do
-  if git pull --rebase --autostash origin main; then
+  if git fetch origin main && git reset --hard origin/main && git clean -fd; then
     pull_ok=1
     break
   fi
@@ -28,6 +28,7 @@ fi
 
 echo "[1.5/3] Confirm latest commit..."
 git log --oneline -n 1
+git status --short
 
 echo "[2/4] Pull base image if needed..."
 docker pull python:3.12-slim || true
